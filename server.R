@@ -20,8 +20,8 @@ shinyServer(function(input, output, session) {
 
   output$title <- renderUI({
     titlePanel(sprintf("Welcome, %s", synGetUserProfile()@userName))
-    table<-synTableQuery("SELECT * FROM syn5479989 LIMIT 100")
-    print(head(table))
+    #table<-synTableQuery("SELECT * FROM syn5479989 LIMIT 100")
+    #print(head(table))
   })
 
 

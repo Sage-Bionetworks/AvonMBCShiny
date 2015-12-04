@@ -18,19 +18,75 @@ shinyServer(function(input, output, session) {
   
   foo <- reactive(synapseLogin(sessionToken=input$cookie))
 
-  output$title <- renderUI({
-    titlePanel(sprintf("Welcome, %s", synGetUserProfile()@userName))
-  })
-  
-  output$distPlot <- renderPlot({
+  table<-synTableQuery("SELECT * FROM syn5479989 LIMIT 100")
 
-    # generate bins based on input$bins from ui.R
-    x    <- faithful[, 2]
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
+   output$TechAbstract<-renderText(
+    {
+      rowIndex<-grep(sprintf("^%s_", input$abstractIndex), rownames(table@values))
+      if (length(rowIndex)!=1) {
+        "Error:  No unique matching record"
+      } else {
+        table@values[rowIndex, "TechAbstract"]
+      }
+    }
+  )
+      
+  output$AwardTitle<-renderText(
+    {
+      rowIndex<-grep(sprintf("^%s_", input$abstractIndex), rownames(table@values))
+      if (length(rowIndex)!=1) {
+        "Error:  No unique matching record"
+      } else {
+        table@values[rowIndex, "AwardTitle"]
+      }
+    }
+  )
 
-    # draw the histogram with the specified number of bins
-    hist(x, breaks = bins, col = 'darkgray', border = 'white')
+      
+  output$Pathway<-renderText(
+    {
+      rowIndex<-grep(sprintf("^%s_", input$abstractIndex), rownames(table@values))
+      if (length(rowIndex)!=1) {
+        "Error:  No unique matching record"
+      } else {
+        table@values[rowIndex, "Pathway"]
+      }
+    }
+  )
 
-  })
+      
+  output$PathwayGroup<-renderText(
+    {
+      rowIndex<-grep(sprintf("^%s_", input$abstractIndex), rownames(table@values))
+      if (length(rowIndex)!=1) {
+        "Error:  No unique matching record"
+      } else {
+        table@values[rowIndex, "Pathway_Group"]
+      }
+    }
+  )
+
+      
+  output$MolecularTarget<-renderText(
+    {
+      rowIndex<-grep(sprintf("^%s_", input$abstractIndex), rownames(table@values))
+      if (length(rowIndex)!=1) {
+        "Error:  No unique matching record"
+      } else {
+        table@values[rowIndex, "Molecular_Target"]
+      }
+    }
+  )
+      
+  output$MolecularTargetGroup<-renderText(
+    {
+      rowIndex<-grep(sprintf("^%s_", input$abstractIndex), rownames(table@values))
+      if (length(rowIndex)!=1) {
+        "Error:  No unique matching record"
+      } else {
+        table@values[rowIndex, "Molecular_Target_Group"]
+      }
+    }
+  )
 
 })

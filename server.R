@@ -17,6 +17,10 @@ shinyServer(function(input, output, session) {
                             message=list(name='org.sagebionetworks.security.user.login.token'))
   
   foo <- reactive(synapseLogin(sessionToken=input$cookie))
+  
+  output$title <- renderUI({
+    titlePanel(sprintf("Welcome, %s", synGetUserProfile()@userName))
+  })
 
   table<-synTableQuery("SELECT * FROM syn5479989 LIMIT 100")
 

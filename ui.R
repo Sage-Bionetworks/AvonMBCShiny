@@ -18,7 +18,7 @@ shinyUI(fluidPage(
       includeScript("www/readCookie.js")
     )
   ),
-  
+  uiOutput("title"),  
   titlePanel(h3("Avon Metastatic Breast Cancer Abstract Analysis")),
 
   sidebarLayout(position = "right",

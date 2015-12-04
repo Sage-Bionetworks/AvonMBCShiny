@@ -11,6 +11,7 @@
 
 library(shiny)
 
+library(synapseClient)
 shinyUI(fluidPage(
 
   tags$head(

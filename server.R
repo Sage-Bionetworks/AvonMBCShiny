@@ -26,7 +26,11 @@ shinyServer(function(input, output, session) {
       titlePanel(sprintf("Welcome, %s", synGetUserProfile()@userName))
       #print(head(table))
     })
+    #For the download file path
+    filePath<-synTableQuery("SELECT * FROM syn5479989 LIMIT 100",loadResult = F)
     table<-synTableQuery("SELECT * FROM syn5479989 LIMIT 100")
+    #Remove the files downloaded
+    unlink(filePath@filePath)
 
     output$TechAbstract<-renderText(
       {

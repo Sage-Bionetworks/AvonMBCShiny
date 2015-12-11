@@ -17,32 +17,55 @@ shinyServer(function(input, output, session) {
   session$sendCustomMessage(type="readCookie",
                             message=list(name='org.sagebionetworks.security.user.login.token'))
   
-  foo <- observeEvent(input$cookie, {
+  #foo <- observeEvent(input$cookie, {
 
     #log into synapse
-    synapseLogin(sessionToken=input$cookie)
-
+   # synapseLogin(sessionToken=input$cookie)
+    synapseLogin() 
     output$title <- renderUI({
       titlePanel(sprintf("Welcome, %s", synGetUserProfile()@userName))
       #print(head(table))
     })
     #For the download file path
-    filePath<-synTableQuery("SELECT * FROM syn5479989 LIMIT 100",loadResult = F)
-    table<-synTableQuery("SELECT * FROM syn5479989 LIMIT 100")
+    filePath<-synTableQuery("SELECT * FROM syn5522369 LIMIT 100",loadResult = F)
+    table<-synTableQuery("SELECT * FROM syn5522369 LIMIT 100")
     #Remove the files downloaded
     unlink(filePath@filePath)
 
     output$TechAbstract<-renderText(
       {
+        rowIndex<-rownames(table@values)[grep(sprintf("^%s_", input$abstractIndex), rownames(table@values))]
+        if (length(rowIndex)!=1) {
+          "Error:  No unique matching record"
+        } else {
+          temp= synDownloadTableFile(table, rowIndex, "TechAbstract")
+          return(readLines(temp))
+        }
+      }
+    )
+    
+    output$PIName<-renderText(
+      {
         rowIndex<-grep(sprintf("^%s_", input$abstractIndex), rownames(table@values))
         if (length(rowIndex)!=1) {
           "Error:  No unique matching record"
         } else {
-          table@values[rowIndex, "TechAbstract"]
+          paste(table@values[rowIndex, c("PILastName","PIFirstName")],collapse = ", ")
         }
       }
     )
-        
+    
+    output$Institution<-renderText(
+      {
+        rowIndex<-grep(sprintf("^%s_", input$abstractIndex), rownames(table@values))
+        if (length(rowIndex)!=1) {
+          "Error:  No unique matching record"
+        } else {
+          table@values[rowIndex, "Institution"]
+        }
+      }
+    )
+    
     output$AwardTitle<-renderText(
       {
         rowIndex<-grep(sprintf("^%s_", input$abstractIndex), rownames(table@values))
@@ -100,6 +123,6 @@ shinyServer(function(input, output, session) {
         }
       }
     )
-  })
+  #}) Integrate with synapse END
 
 })

@@ -32,6 +32,10 @@ shinyUI(fluidPage(
       textOutput("AwardTitle"),
       h5("Abstract"), 
       textOutput("TechAbstract"),
+      h5("Principal Investigator"),
+      textOutput("PIName"),
+      h5("Institution"),
+      textOutput("Institution"),
       h5("Pathway"),
       textOutput("Pathway"),
       h5("Pathway Group"),
@@ -40,6 +44,8 @@ shinyUI(fluidPage(
       textOutput("MolecularTarget"),
       h5("Molecular Target Group"),
       textOutput("MolecularTargetGroup")
+
+      
       )
   )
 ))

@@ -9,125 +9,224 @@
 #
 # https://www.synapse.org
 
-shinyServer(function(input, output, session) {
 
-  session$sendCustomMessage(type="readCookie",
-                            message=list(name='org.sagebionetworks.security.user.login.token'))
+server <- function(input, output,session) {
+  #input$searchText
+  getGrantsTitles <- reactive({
+    table <- tableQuery()$TechAbstract
+    sapply(table, function(x) {
+      gregexpr(pattern = input$searchText,x)[[1]]
+    })
+  })
   
-  #foo <- observeEvent(input$cookie, {
+  tableQuery <- reactive({
+    if (input$show_MBC) {
+      table <- grant.MBC[tolower(grant.MBC$Metastasis_stage) == input$stage,]
+    } else {
+      table <- grant.df[grant.df$Metastasis_YN == 'n',]
+    }
+    table
+  })
+  output$mySite <- renderUI({
+    table <- tableQuery() 
+    rowIndex<-grep(input$grants, table$AwardTitle)
+    author = paste(table[rowIndex, c("PILastName","PIFirstName")],collapse = ", ")
+    tags$a(href = sprintf("http://www.ncbi.nlm.nih.gov/pubmed/?term=%s+%s",author,"breast"), "NCBI resources")
+  })
+  
 
-    #log into synapse
-   # synapseLogin(sessionToken=input$cookie)
+  output$numGrants <- renderText({
+    table<-tableQuery()
+    return(nrow(table))
+  })
+  
+  observe({
+    updateSelectInput(session, "grants", label = "Grants", choices = tableQuery()$AwardTitle)
+  })
+  # ---------------------------------------------
+  # STATIC CONTENT
+  # ---------------------------------------------
+  output$PIName<-renderText({
+    table <- tableQuery() 
+    #rowIndex<-grep(sprintf("^%s_", input$abstractIndex), rownames(table@values))
+    rowIndex<-grep(input$grants, table$AwardTitle)
+    paste(table[rowIndex, c("PILastName","PIFirstName")],collapse = ", ")
+  })
+  
+  output$Institution<-renderText({
+    table <- tableQuery() 
+    rowIndex<-grep(input$grants, table$AwardTitle)
+    table[rowIndex, "Institution"]
+  })
+  
+  output$AwardTitle<-renderText({
+    table <- tableQuery() 
+    rowIndex<-grep(input$grants, table$AwardTitle)
+    table[rowIndex, "AwardTitle"]
+  })
+  
+  
+  output$Pathway<-renderText({
+    table <- tableQuery() 
+    rowIndex<-grep(input$grants, table$AwardTitle)
+    table[rowIndex, "Pathway"]
     
-    #Get the grants with respect to different metadata
-    tableQuery <- reactive({
-      table <- grant.MBC[grant.MBC$Metastasis_stage == input$stage,]
-      table
-    })
+  })
+  
+  
+  output$PathwayGroup<-renderText({
+    table <- tableQuery() 
+    rowIndex<-grep(input$grants, table$AwardTitle)
+    table[rowIndex, "Pathway_Group"]
     
-    observe({
-      updateSelectInput(session, "grants", label = "Grants", choices = tableQuery()$AwardTitle)
-      updateSelectInput(session, "pathways", label = "Pathways", choices = tableQuery()$Pathway)
-      #updateSelectInput(session, "pwgroup", label = "Pathway Group", choices = c(tableQuery()@values$Pathway_Group = sprintf("and Pathway_Group = %s",tableQuery()@values$Pathway_Group)))
-      #updateSelectInput(session, "metaYN", label = "Metastatis", choices = c(tableQuery()@values$Metastatis_YN = sprintf("and Metastatis_YN = %s",tableQuery()@values$Metastatis_YN)))
-      #updateSelectInput(session, "metaStage", label = "Metastatic Stage", choices = c(tableQuery()@values$Metastasis_stage = sprintf("and Metastasis_stage = %s",tableQuery()@values$Metastasis_stage)))
-      #updateSelectInput(session, "mt", label = "Molecular Targets", choices = c(tableQuery()@values$Molecular_Target = sprintf("and Molecular_Target = %s",tableQuery()@values$Molecular_Target)))
-      #updateSelectInput(session, "mtgroup", label = "Molecular Target Groups", choices = c(tableQuery()@values$Molecular_Target_Group = sprintf("and Molecular_Target = %s",tableQuery()@values$Molecular_Target_Group)))
-      
-    })
-    
-    output$PIName<-renderText({
-        table <- tableQuery() 
-        #rowIndex<-grep(sprintf("^%s_", input$abstractIndex), rownames(table@values))
-        rowIndex<-grep(input$grants, table$AwardTitle)
-        if (length(rowIndex)!=1) {
-          "Error:  No unique matching record"
-        } else {
-          paste(table[rowIndex, c("PILastName","PIFirstName")],collapse = ", ")
-        }
-    })
-    output$numGrants <- renderText({
-      table<-tableQuery()
-      return(nrow(table))
-    })
-    
-    output$Institution<-renderText({
-        table <- tableQuery() 
-        rowIndex<-grep(input$grants, table$AwardTitle)
-        if (length(rowIndex)!=1) {
-          "Error:  No unique matching record"
-        } else {
-          table[rowIndex, "Institution"]
-        }
-    })
-    
-    output$AwardTitle<-renderText({
-        table <- tableQuery() 
-        rowIndex<-grep(input$grants, table$AwardTitle)
-        if (length(rowIndex)!=1) {
-          "Error:  No unique matching record"
-        } else {
-          table[rowIndex, "AwardTitle"]
-        }
-    })
+  })
+  
+  
+  output$MolecularTarget<-renderText({
+    table <- tableQuery() 
+    rowIndex<-grep(input$grants, table$AwardTitle)
+    table[rowIndex, "Molecular_Target"]
 
-        
-    output$Pathway<-renderText({
-        table <- tableQuery() 
-        rowIndex<-grep(input$grants, table$AwardTitle)
-        if (length(rowIndex)!=1) {
-          "Error:  No unique matching record"
-        } else {
-          table[rowIndex, "Pathway"]
-        }
-    })
+  })
+  
+  output$MolecularTargetGroup<-renderText({
+    table <- tableQuery() 
+    rowIndex<-grep(input$grants, table$AwardTitle)
 
-        
-    output$PathwayGroup<-renderText({
-        table <- tableQuery() 
-        rowIndex<-grep(input$grants, table$AwardTitle)
-        if (length(rowIndex)!=1) {
-          "Error:  No unique matching record"
-        } else {
-          table[rowIndex, "Pathway_Group"]
-        }
-    })
-
-        
-    output$MolecularTarget<-renderText({
-        table <- tableQuery() 
-        rowIndex<-grep(input$grants, table$AwardTitle)
-        if (length(rowIndex)!=1) {
-          "Error:  No unique matching record"
-        } else {
-          table[rowIndex, "Molecular_Target"]
-        }
-    })
+    table[rowIndex, "Molecular_Target_Group"]
+  })
+  
+  output$TechAbstract<-renderText({
+    table <- tableQuery() 
+    rowIndex<-grep(input$grants, table$AwardTitle)
+    #if (length(rowIndex)!=1) {
+    #  "Error:  No unique matching record"
+    #} else {
+    text <- table[rowIndex, "TechAbstract"]
     
-    output$MolecularTargetGroup<-renderText({
-        table <- tableQuery() 
-        rowIndex<-grep(input$grants, table$AwardTitle)
-        if (length(rowIndex)!=1) {
-          "Error:  No unique matching record"
-        } else {
-          table[rowIndex, "Molecular_Target_Group"]
-        }
-    })
-    
-    output$TechAbstract<-renderText({
-        table <- tableQuery() 
-        rowName<-table$ROW_INDEX[grep(input$grants, table$AwardTitle)]
-        if (length(rowName)!=1) {
-          "Error:  No unique matching record"
-        } else {
-          temp= synDownloadTableFile(grants, rowName, "TechAbstract")
-          abstract <- readLines(temp)
-          unlink(temp)
-          return(abstract)
-        }
-      }
-    )
-  # })
-  #}) Integrate with synapse END
-
-})
+    for (word in highlight.keywords) {
+      text <- gsub(sprintf(" %s",word), sprintf(' <span style="background-color: #FFFF00">%s</span>',word),text,fixed=T)
+    }
+    text
+    #}
+  })
+}
+# 
+# shinyServer(function(input, output, session) {
+# 
+#   session$sendCustomMessage(type="readCookie",
+#                             message=list(name='org.sagebionetworks.security.user.login.token'))
+#   
+#   #foo <- observeEvent(input$cookie, {
+# 
+#     #log into synapse
+#    # synapseLogin(sessionToken=input$cookie)
+#     
+#     #Get the grants with respect to different metadata
+#     tableQuery <- reactive({
+#       table <- grant.MBC[grant.MBC$Metastasis_stage == input$stage,]
+#       table
+#     })
+#     
+#     observe({
+#       updateSelectInput(session, "grants", label = "Grants", choices = tableQuery()$AwardTitle)
+#       #updateSelectInput(session, "pathways", label = "Pathways", choices = tableQuery()$Pathway)
+#     })
+#     
+#     output$PIName<-renderText({
+#         table <- tableQuery() 
+#         #rowIndex<-grep(sprintf("^%s_", input$abstractIndex), rownames(table@values))
+#         rowIndex<-grep(input$grants, table$AwardTitle)
+#         if (length(rowIndex)!=1) {
+#           "Error:  No unique matching record"
+#         } else {
+#           paste(table[rowIndex, c("PILastName","PIFirstName")],collapse = ", ")
+#         }
+#     })
+#     output$numGrants <- renderText({
+#       table<-tableQuery()
+#       return(nrow(table))
+#     })
+#     # ---------------------------------------------
+#     # STATIC CONTENT
+#     # ---------------------------------------------
+#     output$Institution<-renderText({
+#         table <- tableQuery() 
+#         rowIndex<-grep(input$grants, table$AwardTitle)
+#         if (length(rowIndex)!=1) {
+#           "Error:  No unique matching record"
+#         } else {
+#           table[rowIndex, "Institution"]
+#         }
+#     })
+#     
+#     output$AwardTitle<-renderText({
+#         table <- tableQuery() 
+#         rowIndex<-grep(input$grants, table$AwardTitle)
+#         if (length(rowIndex)!=1) {
+#           "Error:  No unique matching record"
+#         } else {
+#           table[rowIndex, "AwardTitle"]
+#         }
+#     })
+# 
+#         
+#     output$Pathway<-renderText({
+#         table <- tableQuery() 
+#         rowIndex<-grep(input$grants, table$AwardTitle)
+#         if (length(rowIndex)!=1) {
+#           "Error:  No unique matching record"
+#         } else {
+#           table[rowIndex, "Pathway"]
+#         }
+#     })
+# 
+#         
+#     output$PathwayGroup<-renderText({
+#         table <- tableQuery() 
+#         rowIndex<-grep(input$grants, table$AwardTitle)
+#         if (length(rowIndex)!=1) {
+#           "Error:  No unique matching record"
+#         } else {
+#           table[rowIndex, "Pathway_Group"]
+#         }
+#     })
+# 
+#         
+#     output$MolecularTarget<-renderText({
+#         table <- tableQuery() 
+#         rowIndex<-grep(input$grants, table$AwardTitle)
+#         if (length(rowIndex)!=1) {
+#           "Error:  No unique matching record"
+#         } else {
+#           table[rowIndex, "Molecular_Target"]
+#         }
+#     })
+#     
+#     output$MolecularTargetGroup<-renderText({
+#         table <- tableQuery() 
+#         rowIndex<-grep(input$grants, table$AwardTitle)
+#         if (length(rowIndex)!=1) {
+#           "Error:  No unique matching record"
+#         } else {
+#           table[rowIndex, "Molecular_Target_Group"]
+#         }
+#     })
+#     
+#     output$TechAbstract<-renderText({
+#         table <- tableQuery() 
+#         rowIndex<-grep(input$grants, table$AwardTitle)
+#         if (length(rowIndex)!=1) {
+#           "Error:  No unique matching record"
+#         } else {
+#           table[rowIndex, "TechAbstract"]
+#         }
+#       }
+#     )
+#     # ---------------------------------------------
+#     # DYNAMIC CONTENT
+#     # ---------------------------------------------
+#   # })
+#   #}) Integrate with synapse END
+# 
+# })

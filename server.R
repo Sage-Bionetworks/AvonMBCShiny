@@ -27,6 +27,7 @@ server <- function(input, output,session) {
     }
     table
   })
+  
   output$mySite <- renderUI({
     table <- tableQuery() 
     rowIndex<-grep(input$grants, table$AwardTitle)
@@ -34,7 +35,6 @@ server <- function(input, output,session) {
     tags$a(href = sprintf("http://www.ncbi.nlm.nih.gov/pubmed/?term=%s+%s",author,"breast"), "NCBI resources")
   })
   
-
   output$numGrants <- renderText({
     table<-tableQuery()
     return(nrow(table))
@@ -65,168 +65,113 @@ server <- function(input, output,session) {
     table[rowIndex, "AwardTitle"]
   })
   
-  
   output$Pathway<-renderText({
     table <- tableQuery() 
     rowIndex<-grep(input$grants, table$AwardTitle)
     table[rowIndex, "Pathway"]
-    
   })
-  
   
   output$PathwayGroup<-renderText({
     table <- tableQuery() 
     rowIndex<-grep(input$grants, table$AwardTitle)
     table[rowIndex, "Pathway_Group"]
-    
   })
-  
   
   output$MolecularTarget<-renderText({
     table <- tableQuery() 
     rowIndex<-grep(input$grants, table$AwardTitle)
     table[rowIndex, "Molecular_Target"]
-
   })
   
   output$MolecularTargetGroup<-renderText({
     table <- tableQuery() 
     rowIndex<-grep(input$grants, table$AwardTitle)
-
     table[rowIndex, "Molecular_Target_Group"]
   })
   
   output$TechAbstract<-renderText({
     table <- tableQuery() 
     rowIndex<-grep(input$grants, table$AwardTitle)
-    #if (length(rowIndex)!=1) {
-    #  "Error:  No unique matching record"
-    #} else {
     text <- table[rowIndex, "TechAbstract"]
     
     for (word in highlight.keywords) {
       text <- gsub(sprintf(" %s",word), sprintf(' <span style="background-color: #FFFF00">%s</span>',word),text,fixed=T)
     }
     text
-    #}
+  })
+  
+  # ---------------------------------------------
+  # Dynamic Content
+  # ---------------------------------------------
+  output$mutable.Pathway <- renderText({
+    table <- tableQuery() 
+    rowIndex<-grep(input$grants, Dynamic.annotations@values$AwardTitle)
+    input$button1
+    pathwayName <- isolate(input$mutable.pathway)
+   # change.annotations(rowIndex,"Pathway",pathwayName)
+    if (pathwayName != "") {
+      Dynamic.annotations@values$Pathway[rowIndex] <- pathwayName
+      synStore(Dynamic.annotations)
+      Dynamic.annotations <-synTableQuery("SELECT * FROM syn5562008",filePath = ".")
+      pathwayName = ""
+    }
+    Dynamic.annotations@values$Pathway[rowIndex]
+  })
+  
+  output$mutable.PathwayGroup <- renderText({
+    table <- tableQuery() 
+    rowIndex<-grep(input$grants, Dynamic.annotations@values$AwardTitle)
+    input$button2
+    pathwaygroup <- isolate(input$mutable.pathwaygroup)
+    if (pathwaygroup != "") {
+      Dynamic.annotations@values$Pathway_Group[rowIndex] <- pathwaygroup
+      synStore(Dynamic.annotations)
+      Dynamic.annotations <-synTableQuery("SELECT * FROM syn5562008",filePath = ".")
+      pathwaygroup = ""
+    }
+    Dynamic.annotations@values$Pathway_Group[rowIndex]
+  })
+  
+  output$mutable.MT <- renderText({
+    table <- tableQuery() 
+    rowIndex<-grep(input$grants, Dynamic.annotations@values$AwardTitle)
+    input$button3
+    mt <- isolate(input$mutable.mt)
+    if (mt != "") {
+      Dynamic.annotations@values$Molecular_Target[rowIndex] <- mt
+      synStore(Dynamic.annotations)
+      Dynamic.annotations <-synTableQuery("SELECT * FROM syn5562008",filePath = ".")
+      mt = ""
+    }
+    Dynamic.annotations@values$Molecular_Target[rowIndex]
+  })
+  
+  output$mutable.MTGroup <- renderText({
+    table <- tableQuery() 
+    rowIndex<-grep(input$grants, Dynamic.annotations@values$AwardTitle)
+    input$button4
+    mtgroup <- isolate(input$mutable.mtgroup)
+    if (mtgroup != "") {
+      Dynamic.annotations@values$Molecular_Target_Group[rowIndex] <- mtgroup
+      synStore(Dynamic.annotations)
+      Dynamic.annotations <-synTableQuery("SELECT * FROM syn5562008",filePath = ".")
+      mtgroup = ""
+    }
+    Dynamic.annotations@values$Molecular_Target_Group[rowIndex]
+  })
+  
+  output$mutable.Metayn <- renderText({
+    table <- tableQuery() 
+    rowIndex<-grep(input$grants, Dynamic.annotations@values$Metastatis_YN)
+    input$button5
+    metayn <- isolate(input$mutable.metayn)
+    change.annotations()
+    if (metayn != "") {
+      Dynamic.annotations@values$Metastatsis_YN[rowIndex] <- metayn
+      synStore(Dynamic.annotations)
+      Dynamic.annotations <-synTableQuery("SELECT * FROM syn5562008",filePath = ".")
+      mtgroup = ""
+    }
+    Dynamic.annotations@values$Molecular_Target_Group[rowIndex]
   })
 }
-# 
-# shinyServer(function(input, output, session) {
-# 
-#   session$sendCustomMessage(type="readCookie",
-#                             message=list(name='org.sagebionetworks.security.user.login.token'))
-#   
-#   #foo <- observeEvent(input$cookie, {
-# 
-#     #log into synapse
-#    # synapseLogin(sessionToken=input$cookie)
-#     
-#     #Get the grants with respect to different metadata
-#     tableQuery <- reactive({
-#       table <- grant.MBC[grant.MBC$Metastasis_stage == input$stage,]
-#       table
-#     })
-#     
-#     observe({
-#       updateSelectInput(session, "grants", label = "Grants", choices = tableQuery()$AwardTitle)
-#       #updateSelectInput(session, "pathways", label = "Pathways", choices = tableQuery()$Pathway)
-#     })
-#     
-#     output$PIName<-renderText({
-#         table <- tableQuery() 
-#         #rowIndex<-grep(sprintf("^%s_", input$abstractIndex), rownames(table@values))
-#         rowIndex<-grep(input$grants, table$AwardTitle)
-#         if (length(rowIndex)!=1) {
-#           "Error:  No unique matching record"
-#         } else {
-#           paste(table[rowIndex, c("PILastName","PIFirstName")],collapse = ", ")
-#         }
-#     })
-#     output$numGrants <- renderText({
-#       table<-tableQuery()
-#       return(nrow(table))
-#     })
-#     # ---------------------------------------------
-#     # STATIC CONTENT
-#     # ---------------------------------------------
-#     output$Institution<-renderText({
-#         table <- tableQuery() 
-#         rowIndex<-grep(input$grants, table$AwardTitle)
-#         if (length(rowIndex)!=1) {
-#           "Error:  No unique matching record"
-#         } else {
-#           table[rowIndex, "Institution"]
-#         }
-#     })
-#     
-#     output$AwardTitle<-renderText({
-#         table <- tableQuery() 
-#         rowIndex<-grep(input$grants, table$AwardTitle)
-#         if (length(rowIndex)!=1) {
-#           "Error:  No unique matching record"
-#         } else {
-#           table[rowIndex, "AwardTitle"]
-#         }
-#     })
-# 
-#         
-#     output$Pathway<-renderText({
-#         table <- tableQuery() 
-#         rowIndex<-grep(input$grants, table$AwardTitle)
-#         if (length(rowIndex)!=1) {
-#           "Error:  No unique matching record"
-#         } else {
-#           table[rowIndex, "Pathway"]
-#         }
-#     })
-# 
-#         
-#     output$PathwayGroup<-renderText({
-#         table <- tableQuery() 
-#         rowIndex<-grep(input$grants, table$AwardTitle)
-#         if (length(rowIndex)!=1) {
-#           "Error:  No unique matching record"
-#         } else {
-#           table[rowIndex, "Pathway_Group"]
-#         }
-#     })
-# 
-#         
-#     output$MolecularTarget<-renderText({
-#         table <- tableQuery() 
-#         rowIndex<-grep(input$grants, table$AwardTitle)
-#         if (length(rowIndex)!=1) {
-#           "Error:  No unique matching record"
-#         } else {
-#           table[rowIndex, "Molecular_Target"]
-#         }
-#     })
-#     
-#     output$MolecularTargetGroup<-renderText({
-#         table <- tableQuery() 
-#         rowIndex<-grep(input$grants, table$AwardTitle)
-#         if (length(rowIndex)!=1) {
-#           "Error:  No unique matching record"
-#         } else {
-#           table[rowIndex, "Molecular_Target_Group"]
-#         }
-#     })
-#     
-#     output$TechAbstract<-renderText({
-#         table <- tableQuery() 
-#         rowIndex<-grep(input$grants, table$AwardTitle)
-#         if (length(rowIndex)!=1) {
-#           "Error:  No unique matching record"
-#         } else {
-#           table[rowIndex, "TechAbstract"]
-#         }
-#       }
-#     )
-#     # ---------------------------------------------
-#     # DYNAMIC CONTENT
-#     # ---------------------------------------------
-#   # })
-#   #}) Integrate with synapse END
-# 
-# })

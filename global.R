@@ -2,37 +2,35 @@
 library(shiny)
 
 library(synapseClient)
+library(shinydashboard)
 synapseLogin() 
 
-grants<-synTableQuery("SELECT * FROM syn5522369",filePath = ".",loadResult = F)
+#grants<-synTableQuery("SELECT * FROM syn5522369",filePath = ".",loadResult = F)
 
 #List all the downloaded files if the table has been updated a new file will be downloaded, 
 #then delete the old file to save space
-grantsFileName = list.files(".","Job-*")
-oldFiles = grantsFileName[basename(grants@filePath) != grantsFileName]
-unlink(oldFiles)
+#grantsFileName = list.files(".","Job-*")
+#oldFiles = grantsFileName[basename(grants@filePath) != grantsFileName]
+#unlink(oldFiles)
 
+#Static content
+grant.df <- read.csv("ICRP_allcombined_grants.csv",stringsAsFactors = F)
 
-grant.df <- read.csv(grants@filePath,stringsAsFactors = F)
-grant.df$ROW_INDEX <- paste(grant.df$ROW_ID,grant.df$ROW_VERSION,sep="_")
+#grant.df$ROW_INDEX <- paste(grant.df$ROW_ID,grant.df$ROW_VERSION,sep="_")
 grant.MBC <- grant.df[grant.df$Metastasis_YN == 'y',]
 allTitles <- grant.MBC$AwardTitle
 allPathways <- grant.MBC$Pathway
-#allPwGroup <- menus@values$Pathway_Group
-#allmetaYN <- menus@values$Metastasis_YN
 allmetaStage <-grant.MBC$Metastasis_stage
-#allMT <- menus@values$Molecular_Target
-#allMTGroup <- menus@values$Molecular_Target_Group
 
-#allPathways = c(allPathways = sprintf("and Pathway = %s",allPathways))
-#allPwGroup = c(allPwGroup = sprintf("and Pathway = %s",allPwGroup))
-#allmetaYN = c(allmetaYN = sprintf("and Pathway = %s",allmetaYN))
+highlight.keywords <- colnames(grant.df)[grep("KW*",colnames(grant.df))][-1]
+highlight.keywords <- sub("KW_","",highlight.keywords)
 
-
+highlight.keywords <- sub("_"," ",highlight.keywords)
 
 #Need to account for if the user wants to see grants related to multiple pathways or metastages
-metaStageMenu= unique(allmetaStage)
-pathwayMenu = unique(allPathways)
+metaStageMenu= unique(tolower(allmetaStage))
+pathwayMenu = unique(tolower(allPathways))
+
 #allMT = c(allMT = sprintf("and Pathway = %s",allMT))
 #allMTGroup = c(allMTGroup = sprintf("and Pathway = %s",allMTGroup))
 

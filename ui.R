@@ -40,7 +40,7 @@ dashboardPage(
           textOutput("Institution"),
           htmlOutput("mySite")
       ),
-      box(title="MBC Anntotations",width = 4,
+      box(title="MBC Annotations",width = 4,
           strong("Pathway"),
           textOutput("Pathway"),
           strong("Pathway Group"),
@@ -60,7 +60,7 @@ dashboardPage(
       
     ),
     fluidRow(
-      box(title="Mutable Anntotations",width = 2,
+      box(title="Mutable Annotations",width = 4,
           strong("Pathway"),
           textOutput("mutable.Pathway"),
           tags$form(
@@ -68,7 +68,7 @@ dashboardPage(
             actionButton("button1","Save")
           )
       ),
-      box(title="Mutable Anntotations",width = 2,
+      box(title="Mutable Annotations",width = 4,
           strong("Pathway Group"),
           textOutput("mutable.PathwayGroup"),
           tags$form(
@@ -76,15 +76,17 @@ dashboardPage(
             actionButton("button2","Save")
           )
       ),
-      box(title="Mutable Anntotations",width = 2,
+      box(title="Mutable Annotations",width = 4,
           strong("Molecular Target"),
           textOutput("mutable.MT"),
           tags$form(
             textInput("mutable.mt","Input molecular target here:",""),
             actionButton("button3","Save")
           )
-      ),
-      box(title="Mutable Anntotations",width = 2,
+      )
+    ),
+    fluidRow(
+      box(title="Mutable Annotations",width = 4,
           strong("Molecular Target Group"),
           textOutput("mutable.MTGroup"),
           tags$form(
@@ -92,13 +94,21 @@ dashboardPage(
             actionButton("button4","Save")
           )
       ),
-      box(title="Mutable Anntotations",width = 2,
-          strong("Metastasis")
+      box(title="Mutable Annotations",width = 4,
+          strong("Metastasis"),
+          textOutput("mutable.Metayn"),
+          tags$form(
+            textInput("mutable.metayn","Input Metastasis (y/n) here:",""),
+            actionButton("button5","Save")
+          )
       ),
-      box(title="Mutable Anntotations",width = 2,
-          # textOutput("MolecularTargetGroup"),
-          strong("Metastasis Stage")
-          #textOutput("MolecularTargetGroup")
+      box(title="Mutable Annotations",width = 4,
+          strong("Metastasis Stage"),
+          textOutput("mutable.Metastage"),
+          tags$form(
+            textInput("mutable.metastage","Input Metastatic stage here:",""),
+            actionButton("button6","Save")
+          )
       )
     )
   )

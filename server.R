@@ -13,15 +13,23 @@
 server <- function(input, output,session) {
   #input$searchText
   getGrantsTitles <- reactive({
-    table <- tableQuery()$TechAbstract
-    sapply(table, function(x) {
-      gregexpr(pattern = input$searchText,x)[[1]]
-    })
+
+    
+    #table <- tableQuery()$TechAbstract
+
   })
   
   tableQuery <- reactive({
     if (input$show_MBC) {
       table <- grant.MBC[tolower(grant.MBC$Metastasis_stage) == input$stage,]
+      input$searchButton
+      if (input$searchText != "") {
+        length <- unname(sapply(table$TechAbstract, function(x) {
+          length(gregexpr(pattern = input$searchText,x,ignore.case = T)[[1]])
+        }))
+        #print(length)
+        table <- table[order(length,decreasing = T),]
+      }
     } else {
       table <- grant.df[grant.df$Metastasis_YN == 'n',]
     }
@@ -162,16 +170,31 @@ server <- function(input, output,session) {
   
   output$mutable.Metayn <- renderText({
     table <- tableQuery() 
-    rowIndex<-grep(input$grants, Dynamic.annotations@values$Metastatis_YN)
+    rowIndex<-grep(input$grants, Dynamic.annotations@values$AwardTitle)
     input$button5
     metayn <- isolate(input$mutable.metayn)
-    change.annotations()
+    #change.annotations()
     if (metayn != "") {
-      Dynamic.annotations@values$Metastatsis_YN[rowIndex] <- metayn
+      Dynamic.annotations@values$Metastasis_YN[rowIndex] <- metayn
       synStore(Dynamic.annotations)
       Dynamic.annotations <-synTableQuery("SELECT * FROM syn5562008",filePath = ".")
-      mtgroup = ""
+      metayn = ""
     }
-    Dynamic.annotations@values$Molecular_Target_Group[rowIndex]
+    Dynamic.annotations@values$Metastasis_YN[rowIndex]
+  })
+  
+  output$mutable.Metastage <- renderText({
+    table <- tableQuery() 
+    rowIndex<-grep(input$grants, Dynamic.annotations@values$AwardTitle)
+    input$button6
+    metastage <- isolate(input$mutable.metastage)
+    #change.annotations()
+    if (metastage != "") {
+      Dynamic.annotations@values$Metastasis_stage[rowIndex] <- metastage
+      synStore(Dynamic.annotations)
+      Dynamic.annotations <-synTableQuery("SELECT * FROM syn5562008",filePath = ".")
+      metastage = ""
+    }
+    Dynamic.annotations@values$Metastasis_stage[rowIndex]
   })
 }

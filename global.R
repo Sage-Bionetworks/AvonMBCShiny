@@ -5,16 +5,20 @@ library(synapseClient)
 library(shinydashboard)
 synapseLogin() 
 
-#grants<-synTableQuery("SELECT * FROM syn5522369",filePath = ".",loadResult = F)
+#Dynamic content
+Dynamic.annotations <-synTableQuery("SELECT * FROM syn5562008",filePath = ".")
+#There are duplicated award titles
+Dynamic.annotations@values <- Dynamic.annotations@values[!duplicated(Dynamic.annotations@values$AwardTitle),]
 
 #List all the downloaded files if the table has been updated a new file will be downloaded, 
 #then delete the old file to save space
-#grantsFileName = list.files(".","Job-*")
-#oldFiles = grantsFileName[basename(grants@filePath) != grantsFileName]
-#unlink(oldFiles)
+annotation.Names = list.files(".","Job-*")
+delete.files <- annotation.Names[-which.max(file.mtime(annotation.Names))]
+unlink(delete.files)
 
 #Static content
 grant.df <- read.csv("ICRP_allcombined_grants.csv",stringsAsFactors = F)
+grant.df <- grant.df[!duplicated(grant.df$AwardTitle),]
 
 #grant.df$ROW_INDEX <- paste(grant.df$ROW_ID,grant.df$ROW_VERSION,sep="_")
 grant.MBC <- grant.df[grant.df$Metastasis_YN == 'y',]
@@ -34,5 +38,15 @@ pathwayMenu = unique(tolower(allPathways))
 #allMT = c(allMT = sprintf("and Pathway = %s",allMT))
 #allMTGroup = c(allMTGroup = sprintf("and Pathway = %s",allMTGroup))
 
-
+# ------------------------------------------------------
+# global functions
+# ------------------------------------------------------
+change.annotations <- function(rowIndex, annotation.label, value) {
+  if (value != "") {
+    Dynamic.annotations@values[[annotation.label]][rowIndex] <- value
+    synStore(Dynamic.annotations)
+    Dynamic.annotations <-synTableQuery("SELECT * FROM syn5562008",filePath = ".")
+  }
+  return(Dynamic.annotations@values[[annotation.label]][rowIndex])
+}
 

@@ -16,9 +16,12 @@ annotation.Names = list.files(".","Job-*")
 delete.files <- annotation.Names[-which.max(file.mtime(annotation.Names))]
 unlink(delete.files)
 
+grantdf.Rdata <- synGet("syn5574249")
+grant.df <- load(grantdf.Rdata@filePath)
+
 #Static content
-grant.df <- read.csv("ICRP_allcombined_grants.csv",stringsAsFactors = F)
-grant.df <- grant.df[!duplicated(grant.df$AwardTitle),]
+#grant.df <- read.csv("ICRP_allcombined_grants.csv",stringsAsFactors = F)
+#grant.df <- grant.df[!duplicated(grant.df$AwardTitle),]
 
 #grant.df$ROW_INDEX <- paste(grant.df$ROW_ID,grant.df$ROW_VERSION,sep="_")
 grant.MBC <- grant.df[grant.df$Metastasis_YN == 'y',]

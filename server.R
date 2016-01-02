@@ -97,6 +97,18 @@ server <- function(input, output,session) {
     table[rowIndex, "Molecular_Target_Group"]
   })
   
+  output$MetaStage<-renderText({
+    table <- tableQuery() 
+    rowIndex<-grep(input$grants, table$AwardTitle)
+    table[rowIndex, "Metastasis_stage"]
+  })
+  
+  output$MetaYN<-renderText({
+    table <- tableQuery() 
+    rowIndex<-grep(input$grants, table$AwardTitle)
+    table[rowIndex, "Metastasis_YN"]
+  })
+  
   output$TechAbstract<-renderText({
     table <- tableQuery() 
     rowIndex<-grep(input$grants, table$AwardTitle)
@@ -107,6 +119,8 @@ server <- function(input, output,session) {
     }
     text
   })
+  
+  
   
   # ---------------------------------------------
   # Dynamic Content

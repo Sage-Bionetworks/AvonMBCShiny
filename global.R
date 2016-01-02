@@ -17,7 +17,7 @@ delete.files <- annotation.Names[-which.max(file.mtime(annotation.Names))]
 unlink(delete.files)
 
 grantdf.Rdata <- synGet("syn5574249")
-grant.df <- load(grantdf.Rdata@filePath)
+load(grantdf.Rdata@filePath)
 
 #Static content
 #grant.df <- read.csv("ICRP_allcombined_grants.csv",stringsAsFactors = F)

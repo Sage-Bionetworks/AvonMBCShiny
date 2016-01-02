@@ -21,7 +21,11 @@ server <- function(input, output,session) {
   
   tableQuery <- reactive({
     if (input$show_MBC) {
-      table <- grant.MBC[tolower(grant.MBC$Metastasis_stage) == input$stage,]
+      if (input$stage != "all") {
+        table <- grant.MBC[tolower(grant.MBC$Metastasis_stage) == input$stage,]
+      } else {
+        table <- grant.MBC
+      }
       input$searchButton
       if (input$searchText != "") {
         length <- unname(sapply(table$TechAbstract, function(x) {

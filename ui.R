@@ -33,28 +33,31 @@ dashboardPage(
   
   dashboardBody(
     fluidRow(
-      box(title="Grant Info", width = 12,
+      box(title="Grant Info", width = 8,status = "info",
           tags$style(type='text/css', '#AwardTitle {font-weight: bold;}'),
           textOutput("AwardTitle"),
           textOutput("PIName"),
           textOutput("Institution"),
           htmlOutput("mySite")
+      ),
+      box(title="Number of Grants",width = 4,status = "info",
+          textOutput("numGrants")
       )
     ),
     fluidRow(
-      box(title="MBC Annotations",width = 4,
+      box(title="MBC Annotations",width = 4,status = "info",
           strong("Pathway"),
           textOutput("Pathway"),
           strong("Pathway Group"),
           textOutput("PathwayGroup")
       ),
-      box(title="MBC Annotations",width = 4,
+      box(title="MBC Annotations",width = 4,status = "info",
           strong("Molecular Target"),
           textOutput("MolecularTarget"),
           strong("Molecular Target Group"),
           textOutput("MolecularTargetGroup")
       ),
-      box(title="MBC Annotations",width = 4,
+      box(title="MBC Annotations",width = 4,status = "info",
           strong("Metastasis?"),
           textOutput("MetaYN"),
           strong("Metastasis Stage"),

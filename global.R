@@ -37,6 +37,7 @@ highlight.keywords <- sub("_"," ",highlight.keywords)
 
 #Need to account for if the user wants to see grants related to multiple pathways or metastages
 metaStageMenu= unique(tolower(allmetaStage))
+metaStageMenu = c("all",metaStageMenu)
 pathwayMenu = unique(tolower(allPathways))
 
 #allMT = c(allMT = sprintf("and Pathway = %s",allMT))

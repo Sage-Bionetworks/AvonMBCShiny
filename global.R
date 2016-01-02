@@ -13,8 +13,9 @@ Dynamic.annotations@values <- Dynamic.annotations@values[!duplicated(Dynamic.ann
 #List all the downloaded files if the table has been updated a new file will be downloaded, 
 #then delete the old file to save space
 annotation.Names = list.files(".","Job-*")
-delete.files <- annotation.Names[-which.max(file.mtime(annotation.Names))]
-unlink(delete.files)
+#delete.files <- annotation.Names[-which.max(file.mtime(annotation.Names))]
+#unlink(delete.files)
+unlink(annotation.Names)
 
 grantdf.Rdata <- synGet("syn5574249")
 load(grantdf.Rdata@filePath)

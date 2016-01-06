@@ -48,12 +48,24 @@ server <- function(input, output,session) {
     return(nrow(table))
   })
   
-  observe({
-    updateSelectInput(session, "grants", label = "Grants", choices = tableQuery()$AwardTitle)
-  })
+  #observe({
+  #  updateSelectInput(session, "grants", label = "Grants", choices = tableQuery()$AwardTitle)
+  #})
   # ---------------------------------------------
   # STATIC CONTENT
   # ---------------------------------------------
+  observe({
+    # TRUE if input$controller is even, FALSE otherwise.
+    x_even <- input$grantTitles_rows_selected
+    # Change the selected tab.
+    # Note that the tabsetPanel must have been created with an 'id' argument
+    if (length(x_even)!=0) {
+      updateTabItems(session, "tabs","GrantInfo")
+    } else {
+      updateTabItems(session,"tabs", "GrantSel")
+    }
+  })
+  
   output$PIName<-renderText({
     table <- tableQuery() 
     #rowIndex<-grep(sprintf("^%s_", input$abstractIndex), rownames(table@values))

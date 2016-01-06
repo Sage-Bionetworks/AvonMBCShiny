@@ -18,17 +18,16 @@ dashboardPage(
   #   ),
   dashboardHeader(title = "Avon-MBC Abstract Analysis"),
   dashboardSidebar(  
-    sidebarMenu(
-      menuItem("Grant Selection", tabName = "Grant", icon = icon("dashboard")),
-      menuItem("Grant Information", tabName = "GrantInformation", icon = icon("dashboard"))
-      #submitButton(text = "Apply Changes:", icon = NULL, width = NULL)
+    sidebarMenu(id = "tabs",
+      menuItem("Grant Selection", tabName = "GrantSel", icon = icon("dashboard")),
+      menuItem("Grant Information", tabName = "GrantInfo", icon = icon("dashboard"))
     )
   ),
   
   dashboardBody(
     tabItems(
       #Selection of grants
-      tabItem(tabName = "Grant",
+      tabItem(tabName = "GrantSel",
         fluidRow(
           box(title="Search", width = 4,
             p("This returns a ranked ordering of grants based on frequency of the word"),
@@ -48,6 +47,7 @@ dashboardPage(
         
         fluidRow(
           box(title = "Grants",width = 12,
+              p("Click on a grant to view its information"),
               DT::dataTableOutput('grantTitles')
           )
         )
@@ -55,7 +55,7 @@ dashboardPage(
       ),
       
       #Grant information
-      tabItem(tabName = "GrantInformation",
+      tabItem(tabName = "GrantInfo",
         fluidRow(
           box(title="Grant Info", width = 8,status = "info",
               tags$style(type='text/css', '#AwardTitle {font-weight: bold;}'),
@@ -63,29 +63,34 @@ dashboardPage(
               textOutput("PIName"),
               textOutput("Institution"),
               htmlOutput("mySite")
-          )
-        ),
-        fluidRow(
-          box(title="MBC Annotations",width = 4,status = "info",
+          ),
+          box(title="MBC annotations",width = 4,status = "info",
               strong("Pathway"),
               textOutput("Pathway"),
               strong("Pathway Group"),
-              textOutput("PathwayGroup")
-          ),
-          box(title="MBC Annotations",width = 4,status = "info",
+              textOutput("PathwayGroup"),
               strong("Molecular Target"),
               textOutput("MolecularTarget"),
               strong("Molecular Target Group"),
-              textOutput("MolecularTargetGroup")
-          ),
-          box(title="MBC Annotations",width = 4,status = "info",
+              textOutput("MolecularTargetGroup"),
               strong("Metastasis?"),
               textOutput("MetaYN"),
               strong("Metastasis Stage"),
               textOutput("MetaStage")
           )
-          
         ),
+#         fluidRow(
+#           box(title="MBC Annotations",width = 4,status = "info",
+# 
+#           ),
+#           box(title="MBC Annotations",width = 4,status = "info",
+# 
+#           ),
+#           box(title="MBC Annotations",width = 4,status = "info",
+# 
+#           )
+#           
+#         ),
         fluidRow(
           box(title= "Abstract",collapsible=T, collapsed = F, width = 12,
               tags$style(type='text/css', '#TechAbstract {font-size:10px;}'), 

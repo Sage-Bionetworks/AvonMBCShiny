@@ -56,28 +56,19 @@ dashboardPage(
       
       #Grant information
       tabItem(tabName = "GrantInfo",
-        fluidRow(
-          box(title="Grant Info", width = 8,status = "info",
+        column(width = 8,
+          box(title="Grant Info", width = NULL,status = "info",
               tags$style(type='text/css', '#AwardTitle {font-weight: bold;}'),
               textOutput("AwardTitle"),
               textOutput("PIName"),
               textOutput("Institution"),
               htmlOutput("mySite")
           ),
-          box(title="MBC annotations",width = 4,status = "info",
-              strong("Pathway"),
-              textOutput("Pathway"),
-              strong("Pathway Group"),
-              textOutput("PathwayGroup"),
-              strong("Molecular Target"),
-              textOutput("MolecularTarget"),
-              strong("Molecular Target Group"),
-              textOutput("MolecularTargetGroup"),
-              strong("Metastasis?"),
-              textOutput("MetaYN"),
-              strong("Metastasis Stage"),
-              textOutput("MetaStage")
+          box(title= "Abstract",collapsible=T, collapsed = F, width = NULL,
+              tags$style(type='text/css', '#TechAbstract {font-size:14px;}'), 
+              htmlOutput("TechAbstract")
           )
+          
         ),
 #         fluidRow(
 #           box(title="MBC Annotations",width = 4,status = "info",
@@ -91,11 +82,23 @@ dashboardPage(
 #           )
 #           
 #         ),
-        fluidRow(
-          box(title= "Abstract",collapsible=T, collapsed = F, width = 12,
-              tags$style(type='text/css', '#TechAbstract {font-size:10px;}'), 
-              htmlOutput("TechAbstract")
+        column(width = 4,
+          
+          box(title="MBC annotations",width = NULL,status = "info",
+              strong("Pathway"),
+              textOutput("Pathway"),
+              strong("Pathway Group"),
+              textOutput("PathwayGroup"),
+              strong("Molecular Target"),
+              textOutput("MolecularTarget"),
+              strong("Molecular Target Group"),
+              textOutput("MolecularTargetGroup"),
+              strong("Metastasis?"),
+              textOutput("MetaYN"),
+              strong("Metastasis Stage"),
+              textOutput("MetaStage")
           )
+         
           
          )#,
 #         fluidRow(

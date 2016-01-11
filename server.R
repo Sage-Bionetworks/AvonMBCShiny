@@ -203,7 +203,7 @@ server <- function(input, output,session) {
     rowIndex<-input$grantTitles_rows_selected
     input$button5
     metayn <- isolate(input$mutable.metayn)
-    change.annotations(table.df[rowIndex,"AwardTitle"],annotation.label = "Metastasis_YN",value = metayn)
+    change.annotations(table.df[rowIndex,"AwardTitle"], "Metastasis_YN",  metayn)
   })
   
   output$mutable.Metastage <- renderText({
@@ -211,6 +211,6 @@ server <- function(input, output,session) {
     rowIndex<-input$grantTitles_rows_selected
     input$button6
     metastage <- isolate(input$mutable.metastage)
-    change.annotations(table.df[rowIndex,"AwardTitle"],annotation.label = "Metastasis_stage",value = metastage)
+    change.annotations(table.df[rowIndex,"AwardTitle"], "Metastasis_stage", metastage)
   })
 }

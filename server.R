@@ -15,21 +15,21 @@ server <- function(input, output,session) {
   tableQuery <- reactive({
     if (input$show_MBC) {
       if (input$stage != "all") {
-        table <- grant.MBC[tolower(grant.MBC$Metastasis_stage) == input$stage,]
+        table.df <- grant.MBC[tolower(grant.MBC$Metastasis_stage) == input$stage,]
       } else {
-        table <- grant.MBC
+        table.df <- grant.MBC
       }
       input$searchButton
       if (input$searchText != "") {
         length <- unname(sapply(table$TechAbstract, function(x) {
           length(gregexpr(pattern = input$searchText,x,ignore.case = T)[[1]])
         }))
-        table <- table[order(length,decreasing = T),]
+        table.df <- table.df[order(length,decreasing = T),]
       }
     } else {
-      table <- grant.df[grant.df$Metastasis_YN == 'n',]
+      table.df <- grant.df[grant.df$Metastasis_YN == 'n',]
     }
-    table
+    table.df
   })
   
   output$grantTitles <- DT::renderDataTable({
@@ -37,15 +37,15 @@ server <- function(input, output,session) {
   },server=F)
   
   output$mySite <- renderUI({
-    table <- tableQuery() 
+    table.df <- tableQuery() 
     rowIndex<-input$grantTitles_rows_selected
-    author = paste(table[rowIndex, c("PILastName","PIFirstName")],collapse = ", ")
+    author = paste(table.df[rowIndex, c("PILastName","PIFirstName")],collapse = ", ")
     tags$a(href = sprintf("http://www.ncbi.nlm.nih.gov/pubmed/?term=%s+%s",author,"breast"), "NCBI resources",target="_blank")
   })
   
   output$numGrants <- renderText({
-    table<-tableQuery()
-    return(nrow(table))
+    table.df<-tableQuery()
+    return(nrow(table.df))
   })
   
   #observe({
@@ -67,64 +67,64 @@ server <- function(input, output,session) {
   })
   
   output$PIName<-renderText({
-    table <- tableQuery() 
+    table.df <- tableQuery() 
     #rowIndex<-grep(sprintf("^%s_", input$abstractIndex), rownames(table@values))
     rowIndex<-input$grantTitles_rows_selected
-    paste(table[rowIndex, c("PILastName","PIFirstName")],collapse = ", ")
+    paste(table.df[rowIndex, c("PILastName","PIFirstName")],collapse = ", ")
   })
   
   output$Institution<-renderText({
-    table <- tableQuery() 
+    table.df <- tableQuery() 
     rowIndex<-input$grantTitles_rows_selected
-    table[rowIndex, "Institution"]
+    table.df[rowIndex, "Institution"]
   })
   
   output$AwardTitle<-renderText({
-    table <- tableQuery() 
+    table.df <- tableQuery() 
     rowIndex<-input$grantTitles_rows_selected
-    table[rowIndex, "AwardTitle"]
+    table.df[rowIndex, "AwardTitle"]
   })
   
   output$Pathway<-renderText({
-    table <- tableQuery() 
+    table.df <- tableQuery() 
     rowIndex<-input$grantTitles_rows_selected
-    table[rowIndex, "Pathway"]
+    table.df[rowIndex, "Pathway"]
   })
   
   output$PathwayGroup<-renderText({
-    table <- tableQuery() 
+    table.df <- tableQuery() 
     rowIndex<-input$grantTitles_rows_selected
-    table[rowIndex, "Pathway_Group"]
+    table.df[rowIndex, "Pathway_Group"]
   })
   
   output$MolecularTarget<-renderText({
-    table <- tableQuery() 
+    table.df <- tableQuery() 
     rowIndex<-input$grantTitles_rows_selected
-    table[rowIndex, "Molecular_Target"]
+    table.df[rowIndex, "Molecular_Target"]
   })
   
   output$MolecularTargetGroup<-renderText({
-    table <- tableQuery() 
+    table.df <- tableQuery() 
     rowIndex<-input$grantTitles_rows_selected
-    table[rowIndex, "Molecular_Target_Group"]
+    table.df[rowIndex, "Molecular_Target_Group"]
   })
   
   output$MetaStage<-renderText({
-    table <- tableQuery() 
+    table.df <- tableQuery() 
     rowIndex<-input$grantTitles_rows_selected
-    table[rowIndex, "Metastasis_stage"]
+    table.df[rowIndex, "Metastasis_stage"]
   })
   
   output$MetaYN<-renderText({
-    table <- tableQuery() 
+    table.df <- tableQuery() 
     rowIndex<-input$grantTitles_rows_selected
-    table[rowIndex, "Metastasis_YN"]
+    table.df[rowIndex, "Metastasis_YN"]
   })
   
   output$TechAbstract<-renderText({
-    table <- tableQuery() 
+    table.df <- tableQuery() 
     rowIndex<-input$grantTitles_rows_selected
-    text <- table[rowIndex, "TechAbstract"]
+    text <- table.df[rowIndex, "TechAbstract"]
     
     for (word in highlight.keywords) {
       text <- gsub(sprintf(" %s",word), sprintf(' <span style="background-color: #FFFF00">%s</span>',word),text,fixed=T)
@@ -199,18 +199,18 @@ server <- function(input, output,session) {
 #   })
 #   
   output$mutable.Metayn <- renderText({
-    table <- tableQuery() 
+    table.df <- tableQuery() 
     rowIndex<-input$grantTitles_rows_selected
     input$button5
     metayn <- isolate(input$mutable.metayn)
-    change.annotations(title = table[rowIndex,"AwardTitle"],annotation.label = "Metastasis_YN",value = metayn)
+    change.annotations(title = table.df[rowIndex,"AwardTitle"],annotation.label = "Metastasis_YN",value = metayn)
   })
   
   output$mutable.Metastage <- renderText({
-    table <- tableQuery() 
+    table.df <- tableQuery() 
     rowIndex<-input$grantTitles_rows_selected
     input$button6
     metastage <- isolate(input$mutable.metastage)
-    change.annotations(title = table[rowIndex,"AwardTitle"],annotation.label = "Metastasis_stage",value = metastage)
+    change.annotations(title = table.df[rowIndex,"AwardTitle"],annotation.label = "Metastasis_stage",value = metastage)
   })
 }

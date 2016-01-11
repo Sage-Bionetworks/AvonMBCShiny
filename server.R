@@ -198,35 +198,19 @@ server <- function(input, output,session) {
 #     Dynamic.annotations@values$Molecular_Target_Group[rowIndex]
 #   })
 #   
-#   output$mutable.Metayn <- renderText({
-#     table <- tableQuery() 
-#     rowIndex<-grep(input$grants, Dynamic.annotations@values$AwardTitle)
-#     input$button5
-#     metayn <- isolate(input$mutable.metayn)
-#     #change.annotations()
-#     if (metayn != "") {
-#       Dynamic.annotations@values$Metastasis_YN[rowIndex] <- metayn
-#       synStore(Dynamic.annotations)
-#       Dynamic.annotations <-synTableQuery("SELECT * FROM syn5562008",filePath = ".")
-#       Dynamic.annotations@values <- Dynamic.annotations@values[!duplicated(Dynamic.annotations@values$AwardTitle),]
-#       metayn = ""
-#     }
-#     Dynamic.annotations@values$Metastasis_YN[rowIndex]
-#   })
-#   
-#   output$mutable.Metastage <- renderText({
-#     table <- tableQuery() 
-#     rowIndex<-grep(input$grants, Dynamic.annotations@values$AwardTitle)
-#     input$button6
-#     metastage <- isolate(input$mutable.metastage)
-#     #change.annotations()
-#     if (metastage != "") {
-#       Dynamic.annotations@values$Metastasis_stage[rowIndex] <- metastage
-#       synStore(Dynamic.annotations)
-#       Dynamic.annotations <-synTableQuery("SELECT * FROM syn5562008",filePath = ".")
-#       Dynamic.annotations@values <- Dynamic.annotations@values[!duplicated(Dynamic.annotations@values$AwardTitle),]
-#       metastage = ""
-#     }
-#     Dynamic.annotations@values$Metastasis_stage[rowIndex]
-#   })
+  output$mutable.Metayn <- renderText({
+    table <- tableQuery() 
+    rowIndex<-input$grantTitles_rows_selected
+    input$button5
+    metayn <- isolate(input$mutable.metayn)
+    change.annotations(rowIndex = rowIndex,annotation.label = "Metastasis_YN",value = metayn)
+  })
+  
+  output$mutable.Metastage <- renderText({
+    table <- tableQuery() 
+    rowIndex<-input$grantTitles_rows_selected
+    input$button6
+    metastage <- isolate(input$mutable.metastage)
+    change.annotations(rowIndex = rowIndex,annotation.label = "Metastasis_stage",value = metayn)
+  })
 }

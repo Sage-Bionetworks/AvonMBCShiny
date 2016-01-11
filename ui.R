@@ -97,10 +97,28 @@ dashboardPage(
               textOutput("MetaYN"),
               strong("Metastasis Stage"),
               textOutput("MetaStage")
+          ),
+          box(title="Mutable Annotations",width = NULL,
+                            strong("Metastasis"),
+                            textOutput("mutable.Metayn"),
+                            tags$form(
+                              selectInput("mutable.metayn","Change Metastasis (y/n) here:",selectize = T,
+                                          choices = c("","yes" = "y","no" ="n")),
+                              actionButton("button5","Save")
+                            )
+          ),
+          box(title="Mutable Annotations",width = NULL,
+                            strong("Metastasis Stage"),
+                            textOutput("mutable.Metastage"),
+                            tags$form(
+                              selectInput("mutable.metastage","Change Metastasic stage here:",selectize = T,
+                                          choices = c("",allmetaStage)),
+                              actionButton("button6","Save")
+                            )
           )
          
           
-         )#,
+        )#,
 #         fluidRow(
 #           box(title="Mutable Annotations",width = 4,
 #               strong("Pathway"),

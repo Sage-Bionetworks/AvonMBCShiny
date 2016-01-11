@@ -6,9 +6,8 @@ library(shinydashboard)
 synapseLogin() 
 
 #Dynamic content
-Dynamic.annotations <-synTableQuery("SELECT * FROM syn5562008",filePath = ".")
+Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
 #There are duplicated award titles
-Dynamic.annotations@values <- Dynamic.annotations@values[!duplicated(Dynamic.annotations@values$AwardTitle),]
 
 #List all the downloaded files if the table has been updated a new file will be downloaded, 
 #then delete the old file to save space
@@ -47,10 +46,11 @@ pathwayMenu = unique(tolower(allPathways))
 # global functions
 # ------------------------------------------------------
 change.annotations <- function(rowIndex, annotation.label, value) {
+  Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
   if (value != "") {
     Dynamic.annotations@values[[annotation.label]][rowIndex] <- value
     synStore(Dynamic.annotations)
-    Dynamic.annotations <-synTableQuery("SELECT * FROM syn5562008",filePath = ".")
+    Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
   }
   return(Dynamic.annotations@values[[annotation.label]][rowIndex])
 }

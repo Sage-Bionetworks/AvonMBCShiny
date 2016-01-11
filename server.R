@@ -211,6 +211,6 @@ server <- function(input, output,session) {
     rowIndex<-input$grantTitles_rows_selected
     input$button6
     metastage <- isolate(input$mutable.metastage)
-    change.annotations(rowIndex = rowIndex,annotation.label = "Metastasis_stage",value = metayn)
+    change.annotations(rowIndex = rowIndex,annotation.label = "Metastasis_stage",value = metastage)
   })
 }

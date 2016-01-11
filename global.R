@@ -45,8 +45,9 @@ pathwayMenu = unique(tolower(allPathways))
 # ------------------------------------------------------
 # global functions
 # ------------------------------------------------------
-change.annotations <- function(rowIndex, annotation.label, value) {
+change.annotations <- function(title, annotation.label, value) {
   Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
+  rowIndex <- which(Dynamic.annotations@values$AwardTitle == title)
   if (value != "") {
     Dynamic.annotations@values[[annotation.label]][rowIndex] <- value
     synStore(Dynamic.annotations)

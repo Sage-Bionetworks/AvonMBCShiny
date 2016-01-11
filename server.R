@@ -203,7 +203,17 @@ server <- function(input, output,session) {
     rowIndex<-input$grantTitles_rows_selected
     input$button5
     metayn <- isolate(input$mutable.metayn)
-    change.annotations(table.df[rowIndex,"AwardTitle"], "Metastasis_YN",  metayn)
+    #change.annotations(table.df[rowIndex,"AwardTitle"], "Metastasis_YN",  metayn)
+    title = table.df[rowIndex,"AwardTitle"]
+    Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
+    rowIndex <- which(Dynamic.annotations@values$AwardTitle == title)
+    if (metayn != "") {
+      Dynamic.annotations@values$Metastasis_YN[rowIndex] <- metayn
+      synStore(Dynamic.annotations)
+      #Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
+      metayn = ""
+    }
+    Dynamic.annotations@values$Metastasis_YN[rowIndex]
   })
   
   output$mutable.Metastage <- renderText({

@@ -21,7 +21,7 @@ server <- function(input, output,session) {
       }
       input$searchButton
       if (input$searchText != "") {
-        length <- unname(sapply(table$TechAbstract, function(x) {
+        length <- unname(sapply(table.df$TechAbstract, function(x) {
           length(gregexpr(pattern = input$searchText,x,ignore.case = T)[[1]])
         }))
         table.df <- table.df[order(length,decreasing = T),]

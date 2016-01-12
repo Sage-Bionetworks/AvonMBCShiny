@@ -11,11 +11,11 @@
 
 #shinyUI(fluidPage(
 dashboardPage(
-  #   tags$head(
-  #     singleton(
-  #       includeScript("www/readCookie.js")
-  #     )
-  #   ),
+  tags$head(
+    singleton(
+      includeScript("www/readCookie.js")
+    )
+  ),
   dashboardHeader(title = "Avon-MBC Abstract Analysis"),
   dashboardSidebar(  
     sidebarMenu(id = "tabs",

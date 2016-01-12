@@ -11,16 +11,17 @@
 
 #shinyUI(fluidPage(
 dashboardPage(
-  tags$head(
-    singleton(
-      includeScript("www/readCookie.js")
-    )
-  ),
+
   dashboardHeader(title = "Avon-MBC Abstract Analysis"),
   dashboardSidebar(  
     sidebarMenu(id = "tabs",
       menuItem("Grant Selection", tabName = "GrantSel", icon = icon("dashboard")),
       menuItem("Grant Information", tabName = "GrantInfo", icon = icon("dashboard"))
+    ),
+    tags$head(
+      singleton(
+        includeScript("www/readCookie.js")
+      )
     )
   ),
   

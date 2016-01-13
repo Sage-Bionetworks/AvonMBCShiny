@@ -3,7 +3,7 @@ library(shiny)
 
 library(synapseClient)
 library(shinydashboard)
-#synapseLogin() 
+synapseLogin() 
 
 #Dynamic content
 Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")

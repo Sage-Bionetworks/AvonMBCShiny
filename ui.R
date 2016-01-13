@@ -71,18 +71,6 @@ dashboardPage(
           )
           
         ),
-#         fluidRow(
-#           box(title="MBC Annotations",width = 4,status = "info",
-# 
-#           ),
-#           box(title="MBC Annotations",width = 4,status = "info",
-# 
-#           ),
-#           box(title="MBC Annotations",width = 4,status = "info",
-# 
-#           )
-#           
-#         ),
         column(width = 4,
           
           box(title="MBC annotations",width = NULL,status = "info",
@@ -99,7 +87,7 @@ dashboardPage(
               strong("Metastasis Stage"),
               textOutput("MetaStage")
           ),
-          box(title="Mutable Annotations",width = NULL,
+          box(title="Generated Annotations",width = NULL,
                             strong("Metastasis"),
                             textOutput("mutable.Metayn"),
                             tags$form(
@@ -108,7 +96,7 @@ dashboardPage(
                               actionButton("button5","Save")
                             )
           ),
-          box(title="Mutable Annotations",width = NULL,
+          box(title="Generated Annotations",width = NULL,
                             strong("Metastasis Stage"),
                             textOutput("mutable.Metastage"),
                             tags$form(

@@ -58,10 +58,8 @@ server <- function(input, output,session) {
     })
     
     observe({
-      updateSelectInput(session, "mutable.metayn", label = "Change Metastasis (y/n) here:",selectize = T,
-                  choices = c("","yes" = "y","no" ="n"))
-      updateSelectInput(session, "mutable.metastage", label = "Change Metastasic stage here:",selectize = T,
-                  choices = c("",allmetaStage))
+      updateSelectInput(session, "mutable.metayn", label = "Change Metastasis (y/n) here:",selected = "")
+      updateSelectInput(session, "mutable.metastage", label = "Change Metastasic stage here:", selected = "")
     })
     # ---------------------------------------------
     # STATIC CONTENT

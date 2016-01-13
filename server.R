@@ -58,7 +58,6 @@ server <- function(input, output,session) {
     })
     
     observe({
-      updateSelectInput(session, "mutable.metayn", label = "Change Metastasis (y/n) here:",selected = "")
       updateSelectInput(session, "mutable.metastage", label = "Change Metastasic stage here:", selected = "")
     })
     # ---------------------------------------------
@@ -222,6 +221,7 @@ server <- function(input, output,session) {
         synStore(Dynamic.annotations)
         #Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
         metayn = ""
+        updateSelectInput(session, "mutable.metayn", label = "Change Metastasis (y/n) here:",selected = "")
       }
       Dynamic.annotations@values$Metastasis_YN[rowIndex]
     })

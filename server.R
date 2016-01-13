@@ -204,15 +204,12 @@ server <- function(input, output,session) {
       rowIndex<-input$grantTitles_rows_selected
       input$button5
       metayn <- isolate(input$mutable.metayn)
-      #change.annotations(table.df[rowIndex,"AwardTitle"], "Metastasis_YN",  metayn)
       title = table.df[rowIndex,"AwardTitle"]
       Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
       rowIndex <- which(Dynamic.annotations@values$AwardTitle == title)
       if (metayn != "") {
         Dynamic.annotations@values$Metastasis_YN[rowIndex] <- metayn
         synStore(Dynamic.annotations)
-        #Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
-        #metayn = ""
         updateSelectInput(session, "mutable.metayn", label = "Change Metastasis (y/n) here:",selected = "")
       }
       Dynamic.annotations@values$Metastasis_YN[rowIndex]
@@ -223,15 +220,12 @@ server <- function(input, output,session) {
       rowIndex<-input$grantTitles_rows_selected
       input$button6
       metastage <- isolate(input$mutable.metastage)
-      #change.annotations(table.df[rowIndex,"AwardTitle"], "Metastasis_stage", metastage)
       title = table.df[rowIndex,"AwardTitle"]
       Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
       rowIndex <- which(Dynamic.annotations@values$AwardTitle == title)
       if (metastage != "") {
         Dynamic.annotations@values$Metastasis_stage[rowIndex] <- metastage
         synStore(Dynamic.annotations)
-        #Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
-        #metastage = ""
         #Update menu input
         updateSelectInput(session, "mutable.metastage", label = "Change Metastasic stage here:", selected = "")
       }

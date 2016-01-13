@@ -57,9 +57,12 @@ server <- function(input, output,session) {
       return(nrow(table.df))
     })
     
-    #observe({
-    #  updateSelectInput(session, "grants", label = "Grants", choices = tableQuery()$AwardTitle)
-    #})
+    observe({
+      updateSelectInput(session, "mutable.metayn", label = "Change Metastasis (y/n) here:",selectize = T,
+                  choices = c("","yes" = "y","no" ="n"))
+      updateSelectInput(session, "mutable.metastage", label = "Change Metastasic stage here:",selectize = T,
+                  choices = c("",allmetaStage))
+    })
     # ---------------------------------------------
     # STATIC CONTENT
     # ---------------------------------------------

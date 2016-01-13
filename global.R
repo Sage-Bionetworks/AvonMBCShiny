@@ -1,7 +1,7 @@
 
 library(shiny)
 
-#library(synapseClient)
+library(synapseClient)
 library(shinydashboard)
 #synapseLogin() 
 

@@ -18,9 +18,6 @@ server <- function(input, output,session) {
     
     synapseLogin(sessionToken=input$cookie)
     
-    #output$title <- renderUI({
-    #  titlePanel(sprintf("Welcome, %s", synGetUserProfile()@userName))
-    #})
     tableQuery <- reactive({
       if (input$show_MBC) {
         if (input$stage != "all") {
@@ -57,9 +54,6 @@ server <- function(input, output,session) {
       return(nrow(table.df))
     })
     
-    observe({
-      updateSelectInput(session, "mutable.metastage", label = "Change Metastasic stage here:", selected = "")
-    })
     # ---------------------------------------------
     # STATIC CONTENT
     # ---------------------------------------------
@@ -77,7 +71,6 @@ server <- function(input, output,session) {
     
     output$PIName<-renderText({
       table.df <- tableQuery() 
-      #rowIndex<-grep(sprintf("^%s_", input$abstractIndex), rownames(table@values))
       rowIndex<-input$grantTitles_rows_selected
       paste(table.df[rowIndex, c("PILastName","PIFirstName")],collapse = ", ")
     })
@@ -140,7 +133,6 @@ server <- function(input, output,session) {
       }
       text
     })
-    
     
     
     # ---------------------------------------------
@@ -220,7 +212,7 @@ server <- function(input, output,session) {
         Dynamic.annotations@values$Metastasis_YN[rowIndex] <- metayn
         synStore(Dynamic.annotations)
         #Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
-        metayn = ""
+        #metayn = ""
         updateSelectInput(session, "mutable.metayn", label = "Change Metastasis (y/n) here:",selected = "")
       }
       Dynamic.annotations@values$Metastasis_YN[rowIndex]
@@ -239,7 +231,9 @@ server <- function(input, output,session) {
         Dynamic.annotations@values$Metastasis_stage[rowIndex] <- metastage
         synStore(Dynamic.annotations)
         #Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
-        metastage = ""
+        #metastage = ""
+        #Update menu input
+        updateSelectInput(session, "mutable.metastage", label = "Change Metastasic stage here:", selected = "")
       }
       Dynamic.annotations@values$Metastasis_stage[rowIndex]
     })

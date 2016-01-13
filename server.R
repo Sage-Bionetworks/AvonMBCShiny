@@ -11,12 +11,12 @@
 
 
 server <- function(input, output,session) {
-  session$sendCustomMessage(type="readCookie",
-                            message=list(name='org.sagebionetworks.security.user.login.token'))
-  
-  foo <- observeEvent(input$cookie, {
-    
-    synapseLogin(sessionToken=input$cookie)
+#   session$sendCustomMessage(type="readCookie",
+#                             message=list(name='org.sagebionetworks.security.user.login.token'))
+#   
+#   foo <- observeEvent(input$cookie, {
+#     
+#     synapseLogin(sessionToken=input$cookie)
     
     #output$title <- renderUI({
     #  titlePanel(sprintf("Welcome, %s", synGetUserProfile()@userName))
@@ -242,5 +242,5 @@ server <- function(input, output,session) {
       }
       Dynamic.annotations@values$Metastasis_stage[rowIndex]
     })
-  })#Synapse shiny token session end
+#  })#Synapse shiny token session end
 }

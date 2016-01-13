@@ -17,12 +17,12 @@ dashboardPage(
     sidebarMenu(id = "tabs",
       menuItem("Grant Selection", tabName = "GrantSel", icon = icon("dashboard")),
       menuItem("Grant Information", tabName = "GrantInfo", icon = icon("dashboard"))
-    ),
-    tags$head(
-      singleton(
-        includeScript("www/readCookie.js")
-      )
-    )
+    )#,
+    #tags$head(
+    #  singleton(
+    #    includeScript("www/readCookie.js")
+    #  )
+    #)
   ),
   
   dashboardBody(

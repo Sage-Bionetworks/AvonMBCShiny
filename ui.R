@@ -59,33 +59,33 @@ dashboardPage(
       tabItem(tabName = "GrantInfo",
         column(width = 8,
           box(title="Grant Info", width = NULL,status = "info",
-              tags$style(type='text/css', '#AwardTitle {font-weight: bold;}'),
+              tags$style(type='text/css', '#AwardTitle {font-weight: bold; font-size: 16px;}'),
               textOutput("AwardTitle"),
               textOutput("PIName"),
               textOutput("Institution"),
-              htmlOutput("mySite")
+              htmlOutput("mySite"),
+              actionButton("tabBut", "View Related San Antonio Abstracts")
           ),
           box(title= "Abstract",collapsible=T, collapsed = F, width = NULL,
-              tags$style(type='text/css', '#TechAbstract {font-size:14px;}'), 
-              htmlOutput("TechAbstract")
+              tags$style(type='text/css', '#TechAbstract {font-size:12px;}'), 
+              htmlOutput("TechAbstract"),
+              bsModal("modalExample", "Data Table", "tabBut", size = "large",
+                      DT::dataTableOutput("sanantonio_abstracts")),
+              bsModal("abstractText", "Abstract Text", "rowtogg", size="large",
+                      tags$style(type='text/css', '#sanantonio_text {font-size:10px;}'),
+                      htmlOutput("sanantonio_text"))
           )
           
         ),
-#         fluidRow(
-#           box(title="MBC Annotations",width = 4,status = "info",
-# 
-#           ),
-#           box(title="MBC Annotations",width = 4,status = "info",
-# 
-#           ),
-#           box(title="MBC Annotations",width = 4,status = "info",
-# 
-#           )
-#           
-#         ),
         column(width = 4,
           
-          box(title="MBC annotations",width = NULL,status = "info",
+          box(title="MBC annotations",width = NULL,collapsible=T, collapsed = F,status = "info",
+              tags$style(type='text/css', '#Pathway {font-size:10px;}'),
+              tags$style(type='text/css', '#PathwayGroup {font-size:10px;}'),
+              tags$style(type='text/css', '#MolecularTarget {font-size:10px;}'),
+              tags$style(type='text/css', '#MolecularTargetGroup {font-size:10px;}'),
+              tags$style(type='text/css', '#MetaYN {font-size:10px;}'),
+              tags$style(type='text/css', '#MetaStage {font-size:10px;}'),
               strong("Pathway"),
               textOutput("Pathway"),
               strong("Pathway Group"),
@@ -97,20 +97,25 @@ dashboardPage(
               strong("Metastasis?"),
               textOutput("MetaYN"),
               strong("Metastasis Stage"),
-              textOutput("MetaStage")
+              textOutput("MetaStage")#,
+              #strong("Gene List"),
+              #textOutput("geneList")
           ),
-          box(title="Mutable Annotations",width = NULL,
+          box(title="Mutable Annotations",collapsible=T, collapsed = F,width = NULL,
                             strong("Metastasis"),
                             textOutput("mutable.Metayn"),
+                            strong("Confidence:"),
+                            textOutput("MetaYNPostProb"),
                             tags$form(
                               selectInput("mutable.metayn","Change Metastasis (y/n) here:",selectize = T,
                                           choices = c("","yes" = "y","no" ="n")),
                               actionButton("button5","Save")
                             )
           ),
-          box(title="Mutable Annotations",width = NULL,
+          box(title="Mutable Annotations",collapsible=T, collapsed = F,width = NULL,
                             strong("Metastasis Stage"),
                             textOutput("mutable.Metastage"),
+                            plotOutput("MetaStagePostProb"),
                             tags$form(
                               selectInput("mutable.metastage","Change Metastasic stage here:",selectize = T,
                                           choices = c("",allmetaStage)),

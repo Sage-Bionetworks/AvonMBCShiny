@@ -21,6 +21,7 @@ server <- function(input, output,session) {
     #output$title <- renderUI({
     #  titlePanel(sprintf("Welcome, %s", synGetUserProfile()@userName))
     #})
+    #Grants (allow for querying)
     tableQuery <- reactive({
       if (input$show_MBC) {
         if (input$stage != "all") {
@@ -41,10 +42,12 @@ server <- function(input, output,session) {
       table.df
     })
     
+    #show list of grants
     output$grantTitles <- DT::renderDataTable({
       DT::datatable(tableQuery()[,c("AwardTitle","PIFirstName","PILastName","Institution")],selection = 'single')
     },server=F)
     
+    #NCBI connection
     output$mySite <- renderUI({
       table.df <- tableQuery() 
       rowIndex<-input$grantTitles_rows_selected
@@ -52,6 +55,7 @@ server <- function(input, output,session) {
       tags$a(href = sprintf("http://www.ncbi.nlm.nih.gov/pubmed/?term=%s+%s",author,"breast"), "NCBI resources",target="_blank")
     })
     
+    #number of grants
     output$numGrants <- renderText({
       table.df<-tableQuery()
       return(nrow(table.df))
@@ -75,6 +79,7 @@ server <- function(input, output,session) {
       }
     })
     
+    #PI name
     output$PIName<-renderText({
       table.df <- tableQuery() 
       #rowIndex<-grep(sprintf("^%s_", input$abstractIndex), rownames(table@values))
@@ -82,54 +87,91 @@ server <- function(input, output,session) {
       paste(table.df[rowIndex, c("PILastName","PIFirstName")],collapse = ", ")
     })
     
+    #grant PI institution
     output$Institution<-renderText({
       table.df <- tableQuery() 
       rowIndex<-input$grantTitles_rows_selected
       table.df[rowIndex, "Institution"]
     })
     
+    #Grant title
     output$AwardTitle<-renderText({
       table.df <- tableQuery() 
       rowIndex<-input$grantTitles_rows_selected
       table.df[rowIndex, "AwardTitle"]
     })
     
+    #Pathway annotation
     output$Pathway<-renderText({
       table.df <- tableQuery() 
       rowIndex<-input$grantTitles_rows_selected
       table.df[rowIndex, "Pathway"]
     })
     
+    #pathway group annotation
     output$PathwayGroup<-renderText({
       table.df <- tableQuery() 
       rowIndex<-input$grantTitles_rows_selected
       table.df[rowIndex, "Pathway_Group"]
     })
     
+    #Molecular target annotation
     output$MolecularTarget<-renderText({
       table.df <- tableQuery() 
       rowIndex<-input$grantTitles_rows_selected
       table.df[rowIndex, "Molecular_Target"]
     })
     
+    #MBC Molecular Target Group annotation
     output$MolecularTargetGroup<-renderText({
       table.df <- tableQuery() 
       rowIndex<-input$grantTitles_rows_selected
       table.df[rowIndex, "Molecular_Target_Group"]
     })
     
+    #Display of MBC metastatic stage annotation
     output$MetaStage<-renderText({
       table.df <- tableQuery() 
       rowIndex<-input$grantTitles_rows_selected
       table.df[rowIndex, "Metastasis_stage"]
     })
     
+    #Display of MBC Metastatic YN annotation
     output$MetaYN<-renderText({
       table.df <- tableQuery() 
       rowIndex<-input$grantTitles_rows_selected
       table.df[rowIndex, "Metastasis_YN"]
     })
     
+    #Display of confidence of metastatic YN classifier
+    output$MetaYNPostProb <- renderText({
+      table.df <- tableQuery()
+      rowIndex <- input$grantTitles_rows_selected
+      if (table.df[rowIndex,"Y_meta"] >= 0.5) {
+        return(paste0(round(table.df[rowIndex,"Y_meta"]*100,2),"%"))
+      } else {
+        return(paste0(round(table.df[rowIndex,"N_meta"]*100,2),"%"))
+      }
+    })
+    
+    # Display of metastatic stage posterior probability bar plot
+    output$MetaStagePostProb <- renderPlot({
+      table.df <- tableQuery()
+      rowIndex <- input$grantTitles_rows_selected
+      invasion = table.df[rowIndex,"invasion_meta"]*100
+      arrest = table.df[rowIndex,"arrest_meta"]*100
+      immune = table.df[rowIndex,"immune_meta"]*100
+      metastatic = table.df[rowIndex,"metastatic_meta"]*100
+      intra = table.df[rowIndex,"intravasatsion_meta"]*100
+      metabolic = table.df[rowIndex,"metabolic_meta"]*100
+      par(las=2,mar = c(10,3,4,2) + 0.1)
+      barplot(c("Invasion" = invasion, "Arrest" = arrest,"Immune Surveillance" = immune,
+                "Metastatic Colonization" = metastatic, "Intravasation" = intra, 
+                "Metabolic Deregulation" = metabolic),main="Posterior Probabilities",
+              col = c("red","blue","grey","black","purple","green"),cex.names = 0.8,ylim=c(0,100))
+    })
+    
+    # Display of grant abstracts with highlighting of keywords
     output$TechAbstract<-renderText({
       table.df <- tableQuery() 
       rowIndex<-input$grantTitles_rows_selected
@@ -140,6 +182,58 @@ server <- function(input, output,session) {
       }
       text
     })
+    
+    #For san antonio abstract list pop up 
+    output$sanantonio_abstracts <- DT::renderDataTable({
+      table.df <- tableQuery()
+      rowIndex <- input$grantTitles_rows_selected
+      abstracts <- table.df[rowIndex, "SanAntonio_Abstracts"]
+      abstracts <- unlist(strsplit(abstracts,","))
+      abstract_table <- sanantonio[sanantonio$control  %in% abstracts,]
+      DT::datatable(abstract_table[,c('title','Authors','inst','sess_date')],selection = 'single')
+    },server=F)
+    
+    #For pop up of san antonio abstract text 
+    output$sanantonio_text <- renderText({
+      table.df <- tableQuery()
+      rowIndex <- input$grantTitles_rows_selected
+      abstracts <- table.df[rowIndex, "SanAntonio_Abstracts"]
+      abstracts <- unlist(strsplit(abstracts,","))
+      abstract_table <- sanantonio[sanantonio$control  %in% abstracts,]
+      text <- abstract_table[,'body1']
+      text <- gsub("\\[plusmn\\]","\\&plusmn\\;",text)
+      text <- gsub("\\[","\\<",text)
+      text <- gsub("\\]","\\>",text)
+    })
+    
+    #If you click on a san antonio abstract, a pop up of the abstract text will appear
+    observeEvent({
+      input[[paste("sanantonio_abstracts","rows_selected",sep="_")]]
+    }, {
+      toggleModal(session, "abstractText","open")
+    })
+    
+    #Gene list annotation
+    output$geneList <- renderText({
+      table.df <- tableQuery()
+      rowIndex <- input$grantTitles_rows_selected
+      text <- table.df[rowIndex, "TechAbstract"]
+      gene_index <- unlist(lapply(gene_info,function(x) {
+        count = sapply(x, function(y) {
+          if (y != "") {
+            return(grepl(y, text))
+          } else {
+            return(0)
+          }
+        })
+        if (sum(count>0)) {
+          return(which(gene_info == x))
+        }
+      }))
+      print(temp$name[gene_index])
+      temp$name[gene_index]
+    })
+    
     
     
     

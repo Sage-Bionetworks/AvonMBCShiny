@@ -1,8 +1,7 @@
-
 library(shiny)
-
 library(synapseClient)
 library(shinydashboard)
+library(shinyBS)
 synapseLogin() 
 
 #Dynamic content
@@ -16,11 +15,12 @@ annotation.Names = list.files(".","Job-*")
 #unlink(delete.files)
 unlink(annotation.Names)
 
+#static content
 grantdf.Rdata <- synGet("syn5574249")
 load(grantdf.Rdata@filePath)
 
 #Static content
-#grant.df <- read.csv("ICRP_allcombined_grants.csv",stringsAsFactors = F)
+#grant.df <- read.csv("../AvonMBC/documents/all_grants_posterior_prob.csv",stringsAsFactors = F)
 #grant.df <- grant.df[!duplicated(grant.df$AwardTitle),]
 
 #grant.df$ROW_INDEX <- paste(grant.df$ROW_ID,grant.df$ROW_VERSION,sep="_")

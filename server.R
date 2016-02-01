@@ -1,14 +1,5 @@
 
-# This is the server logic for a Shiny web application.
-# You can find out more about building applications with Shiny here:
-#
-# http://shiny.rstudio.com
-#
-# This server has been modified to be used specifically on Sage Bionetworks Synapse pages
-# to log into Synapse as the currently logged in user from the web portal using the session token.
-#
-# https://www.synapse.org
-
+# Server logic for AvonMBC
 
 server <- function(input, output,session) {
    session$sendCustomMessage(type="readCookie",
@@ -18,10 +9,10 @@ server <- function(input, output,session) {
      
     synapseLogin(sessionToken=input$cookie)
     
-
-    #output$title <- renderUI({
-    #  titlePanel(sprintf("Welcome, %s", synGetUserProfile()@userName))
-    #})
+    source("load.R")
+    output$userLoggedIn <- renderText({
+      sprintf("Logged in as %s", synGetUserProfile()@userName)
+    })
     #Grants (allow for querying)
 
     tableQuery <- reactive({

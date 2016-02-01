@@ -1,15 +1,6 @@
 
-# This is the user-interface definition of a Shiny web application.
-# You can find out more about building applications with Shiny here:
-#
-# http://shiny.rstudio.com
-#
-# This interface has been modified to be used specifically on Sage Bionetworks Synapse pages
-# to log into Synapse as the currently logged in user from the web portal using the session token.
-#
-# https://www.synapse.org
+# User Interface of Avon MBC App
 
-#shinyUI(fluidPage(
 dashboardPage(
 
   dashboardHeader(title = "Avon-MBC Abstract Analysis"),
@@ -49,7 +40,8 @@ dashboardPage(
         fluidRow(
           box(title = "Grants",width = 12,
               p("Click on a grant to view its information"),
-              DT::dataTableOutput('grantTitles')
+              DT::dataTableOutput('grantTitles'),
+              textOutput("userLoggedIn")
           )
         )
         

@@ -2,7 +2,6 @@
 # User Interface of Avon MBC App
 
 dashboardPage(
-
   dashboardHeader(title = "Avon-MBC Abstract Analysis"),
   dashboardSidebar(  
     sidebarMenu(id = "tabs",
@@ -30,7 +29,7 @@ dashboardPage(
               checkboxInput('show_MBC', 'Only show MBC related grants', value = TRUE),
               conditionalPanel("input.show_MBC",
                                selectInput("stage","Metastatic Stage",selectize = T,
-                                           choices = metaStageMenu))
+                                           choices = c("all",metaStageMenu)))
           ), 
           box(title="Number of Grants",width = 4,status = "info",
                  textOutput("numGrants")
@@ -110,7 +109,7 @@ dashboardPage(
                             plotOutput("MetaStagePostProb"),
                             tags$form(
                               selectInput("mutable.metastage","Change Metastasic stage here:",selectize = T,
-                                          choices = c("",allmetaStage)),
+                                          choices = c("",metaStageMenu)),
                               actionButton("button6","Save")
                             )
           )

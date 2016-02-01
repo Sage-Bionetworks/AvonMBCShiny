@@ -17,12 +17,12 @@ dashboardPage(
     sidebarMenu(id = "tabs",
       menuItem("Grant Selection", tabName = "GrantSel", icon = icon("dashboard")),
       menuItem("Grant Information", tabName = "GrantInfo", icon = icon("dashboard"))
-    )#,
-    #tags$head(
-    #  singleton(
-    #    includeScript("www/readCookie.js")
-    #  )
-    #)
+    ),
+    tags$head(
+      singleton(
+        includeScript("www/readCookie.js")
+      )
+    )
   ),
   
   dashboardBody(
@@ -101,7 +101,7 @@ dashboardPage(
               #strong("Gene List"),
               #textOutput("geneList")
           ),
-          box(title="Mutable Annotations",collapsible=T, collapsed = F,width = NULL,
+          box(title="Generated Annotations",collapsible=T, collapsed = F,width = NULL,
                             strong("Metastasis"),
                             textOutput("mutable.Metayn"),
                             strong("Confidence:"),
@@ -112,7 +112,7 @@ dashboardPage(
                               actionButton("button5","Save")
                             )
           ),
-          box(title="Mutable Annotations",collapsible=T, collapsed = F,width = NULL,
+          box(title="Generated Annotations",collapsible=T, collapsed = F,width = NULL,
                             strong("Metastasis Stage"),
                             textOutput("mutable.Metastage"),
                             plotOutput("MetaStagePostProb"),

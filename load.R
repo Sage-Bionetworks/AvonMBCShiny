@@ -1,4 +1,3 @@
-synapseLogin()
 #Dynamic content
 Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
 #There are duplicated award titles

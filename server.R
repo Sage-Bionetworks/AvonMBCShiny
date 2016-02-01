@@ -6,9 +6,11 @@ server <- function(input, output,session) {
                              message=list(name='org.sagebionetworks.security.user.login.token'))
    
    foo <- observeEvent(input$cookie, {
-     
-    synapseLogin(sessionToken=input$cookie)
-    
+    if (!is.null(input$cookie)) {
+      synapseLogin(sessionToken=input$cookie)
+    } else {
+      synapseLogin()
+    }
     source("load.R")
     output$userLoggedIn <- renderText({
       sprintf("Logged in as %s", synGetUserProfile()@userName)

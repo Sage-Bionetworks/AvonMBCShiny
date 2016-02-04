@@ -5,18 +5,22 @@ dashboardPage(
   dashboardHeader(title = "Avon-MBC Abstract Analysis"),
   dashboardSidebar(  
     sidebarMenu(id = "tabs",
+      menuItem("Project Dashboard", tabName = "projDash", icon = icon("dashboard")),
       menuItem("Grant Selection", tabName = "GrantSel", icon = icon("dashboard")),
       menuItem("Grant Information", tabName = "GrantInfo", icon = icon("dashboard"))
-    ),
-    tags$head(
-      singleton(
-        includeScript("www/readCookie.js")
-      )
-    )
+    )#,
+    #tags$head(
+    #  singleton(
+    #    includeScript("www/readCookie.js")
+    #  )
+    #)
   ),
   
   dashboardBody(
     tabItems(
+      tabItem(tabName = "projDash",
+        fluidRow()
+      ),#Dashboard end
       #Selection of grants
       tabItem(tabName = "GrantSel",
         fluidRow(
@@ -77,6 +81,7 @@ dashboardPage(
               tags$style(type='text/css', '#MolecularTargetGroup {font-size:10px;}'),
               tags$style(type='text/css', '#MetaYN {font-size:10px;}'),
               tags$style(type='text/css', '#MetaStage {font-size:10px;}'),
+              tags$style(type='text/css', '#geneList {font-size:10px;}'),
               strong("Pathway"),
               textOutput("Pathway"),
               strong("Pathway Group"),
@@ -88,9 +93,10 @@ dashboardPage(
               strong("Metastasis?"),
               textOutput("MetaYN"),
               strong("Metastasis Stage"),
-              textOutput("MetaStage")#,
-              #strong("Gene List"),
-              #textOutput("geneList")
+              textOutput("MetaStage")
+          ),
+          box(title="Gene List",collapsible=T, collapsed = F,width = NULL,
+              verbatimTextOutput("geneList")
           ),
           box(title="Generated Annotations",collapsible=T, collapsed = F,width = NULL,
                             strong("Metastasis"),

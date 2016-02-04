@@ -2,19 +2,19 @@
 # Server logic for AvonMBC
 
 server <- function(input, output,session) {
-   session$sendCustomMessage(type="readCookie",
-                             message=list(name='org.sagebionetworks.security.user.login.token'))
+   #session$sendCustomMessage(type="readCookie",
+    #                         message=list(name='org.sagebionetworks.security.user.login.token'))
    
-   foo <- observeEvent(input$cookie, {
-    if (!is.null(input$cookie)) {
-      synapseLogin(sessionToken=input$cookie)
-    } else {
-      synapseLogin()
-    }
-    source("load.R")
-    output$userLoggedIn <- renderText({
-      sprintf("Logged in as %s", synGetUserProfile()@userName)
-    })
+   #foo <- observeEvent(input$cookie, {
+    #if (!is.null(input$cookie)) {
+    #  synapseLogin(sessionToken=input$cookie)
+    #} else {
+    #  synapseLogin()
+    #}
+    #source("load.R")
+    #output$userLoggedIn <- renderText({
+    #  sprintf("Logged in as %s", synGetUserProfile()@userName)
+    #})
     #Grants (allow for querying)
 
     tableQuery <- reactive({
@@ -208,21 +208,7 @@ server <- function(input, output,session) {
     output$geneList <- renderText({
       table.df <- tableQuery()
       rowIndex <- input$grantTitles_rows_selected
-      text <- table.df[rowIndex, "TechAbstract"]
-      gene_index <- unlist(lapply(gene_info,function(x) {
-        count = sapply(x, function(y) {
-          if (y != "") {
-            return(grepl(y, text))
-          } else {
-            return(0)
-          }
-        })
-        if (sum(count>0)) {
-          return(which(gene_info == x))
-        }
-      }))
-      print(temp$name[gene_index])
-      temp$name[gene_index]
+      text <- table.df[rowIndex, "gene_list"]
     })
     
     
@@ -323,5 +309,5 @@ server <- function(input, output,session) {
       }
       Dynamic.annotations@values$Metastasis_stage[rowIndex]
     })
-  })#Synapse shiny token session end
+  #})#Synapse shiny token session end
 }

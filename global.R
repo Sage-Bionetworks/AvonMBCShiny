@@ -3,8 +3,6 @@ library(synapseClient)
 library(shinydashboard)
 library(shinyBS)
 library(DT)
-synapseLogin()
-source("load.R")
 metaStageMenu <- c("arrest & extravasation","immune surveillance/escape",
                    "intravasation & circulation","invasion","metabolic deregulation",
                    "metastatic colonization","multiple","other/not specified")
@@ -21,4 +19,14 @@ metaStageMenu <- c("arrest & extravasation","immune surveillance/escape",
 #   }
 #   return(Dynamic.annotations@values[[annotation.label]][rowIndex])
 # }
-
+confusionMatrix_scores <- function(true, pred, positive) {
+  Pos <- true[pred == positive]
+  TP <- sum(Pos == positive)
+  FN <- sum(Pos != positive)
+  Neg <- true[pred != positive]
+  TN <- sum(Neg != positive)
+  FP <- sum(Neg == positive)
+  sens = TP/(TP+FN)
+  spec = TN/(TN+FP)
+  c(round(sens,2),round(spec,2))
+}

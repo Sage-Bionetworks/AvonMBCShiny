@@ -5,6 +5,7 @@ dashboardPage(
   dashboardHeader(title = "Avon-MBC Abstract Analysis"),
   dashboardSidebar(  
     sidebarMenu(id = "tabs",
+      menuItem("Project Dashboard", tabName = "projDash", icon = icon("dashboard")),
       menuItem("Grant Selection", tabName = "GrantSel", icon = icon("dashboard")),
       menuItem("Grant Information", tabName = "GrantInfo", icon = icon("dashboard"))
     ),
@@ -77,6 +78,7 @@ dashboardPage(
               tags$style(type='text/css', '#MolecularTargetGroup {font-size:10px;}'),
               tags$style(type='text/css', '#MetaYN {font-size:10px;}'),
               tags$style(type='text/css', '#MetaStage {font-size:10px;}'),
+              tags$style(type='text/css', '#geneList {font-size:10px;}'),
               strong("Pathway"),
               textOutput("Pathway"),
               strong("Pathway Group"),
@@ -88,30 +90,39 @@ dashboardPage(
               strong("Metastasis?"),
               textOutput("MetaYN"),
               strong("Metastasis Stage"),
-              textOutput("MetaStage")#,
-              #strong("Gene List"),
-              #textOutput("geneList")
+              textOutput("MetaStage")
           ),
-          box(title="Generated Annotations",collapsible=T, collapsed = F,width = NULL,
-                            strong("Metastasis"),
-                            textOutput("mutable.Metayn"),
-                            strong("Confidence:"),
-                            textOutput("MetaYNPostProb"),
-                            tags$form(
-                              selectInput("mutable.metayn","Change Metastasis (y/n) here:",selectize = T,
-                                          choices = c("","yes" = "y","no" ="n")),
-                              actionButton("button5","Save")
-                            )
+          box(title="Gene List",collapsible=T, collapsed = F,width = NULL,
+              verbatimTextOutput("geneList")
           ),
-          box(title="Generated Annotations",collapsible=T, collapsed = F,width = NULL,
-                            strong("Metastasis Stage"),
-                            textOutput("mutable.Metastage"),
-                            plotOutput("MetaStagePostProb"),
-                            tags$form(
-                              selectInput("mutable.metastage","Change Metastasic stage here:",selectize = T,
-                                          choices = c("",metaStageMenu)),
-                              actionButton("button6","Save")
-                            )
+          box(title="MBC Relatedness",collapsible=T, collapsed = F,width = NULL,
+              #strong("Metastasis"),
+              textOutput("mutable.Metayn"),
+              strong("Confidence:"),
+              textOutput("MetaYNPostProb"),
+              tags$form(
+                selectInput("mutable.metaynmenu","Change Metastasis (y/n) here:",selectize = T,
+                            choices = c("","yes","no")),
+                actionButton("button5","Save")
+              )
+          ),
+          box(title="Metastatic Stage",collapsible=T, collapsed = F,width = NULL,
+              #strong("Metastasis Stage"),
+              textOutput("mutable.Metastage"),
+              plotOutput("MetaStagePostProb"),
+              tags$form(
+                selectInput("mutable.metastagemenu","Change Metastasic stage here:",selectize = T,
+                            choices = c("",metaStageMenu)),
+                actionButton("button6","Save")
+              )
+          ),
+          box(title="Molecular Target", collapsible = T, collapsed = F, width=NULL,
+              textOutput("mutable.MT"),
+              tags$form(
+                selectInput("mutable.mtmenu","Select Molecular Target here:",selectize = T,
+                            choices = c("")),
+                actionButton("button6","Save")
+              )     
           )
          
           
@@ -168,7 +179,30 @@ dashboardPage(
 #               )
 #           )
 #         )
-      )#Tab item end
+      ),#Tab item end
+      # Project Dashboard
+      tabItem(tabName = "projDash",
+        fluidRow(
+          box(title="MBC Distribution",width=6,
+              plotOutput("dashboard_metaYN")
+          ),
+          box(title="Metastatic Stage Distribution",width=6,
+              plotOutput("dashboard_metastage"),
+              verbatimTextOutput("dashboard_metastageLegend")
+          )
+        ),
+        fluidRow(
+          box(title="MBC Posterior Probability Density Plot",width=6,
+              plotOutput("dashboard_postmetaYN"),
+              verbatimTextOutput("dashboard_metaYN_stats")
+          ),
+          box(title="Metastatis Stage Posterior Probability Density Plots",width=6,
+              plotOutput("dashboard_postmetaStage"),
+              verbatimTextOutput("dashboard_metastage_stats")
+            
+          )
+        )
+      )#Dashboard tab end
     )
   )
 )

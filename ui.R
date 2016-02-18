@@ -2,7 +2,7 @@
 # User Interface of Avon MBC App
 
 dashboardPage(
-  dashboardHeader(title = "Avon-MBC Abstract Analysis"),
+  dashboardHeader(title = "MBC Abstracts"),
   dashboardSidebar(  
     sidebarMenu(id = "tabs",
       menuItem("Project Dashboard", tabName = "projDash", icon = icon("dashboard")),
@@ -30,7 +30,7 @@ dashboardPage(
               checkboxInput('show_MBC', 'Only show MBC related grants', value = TRUE),
               conditionalPanel("input.show_MBC",
                                selectInput("stage","Metastatic Stage",selectize = T,
-                                           choices = c("all",metaStageMenu)))
+                                           choices = metaStageMenu,selected = "all"))
           ), 
           box(title="Number of Grants",width = 4,status = "info",
                  textOutput("numGrants")
@@ -55,6 +55,7 @@ dashboardPage(
               textOutput("AwardTitle"),
               textOutput("PIName"),
               textOutput("Institution"),
+              textOutput("Date"),
               htmlOutput("mySite"),
               actionButton("tabBut", "View Related San Antonio Abstracts")
           ),
@@ -104,7 +105,9 @@ dashboardPage(
                 selectInput("mutable.metaynmenu","Change Metastasis (y/n) here:",selectize = T,
                             choices = c("","yes","no")),
                 actionButton("button5","Save")
-              )
+              ),
+              strong("Last Updated by:"),
+              htmlOutput("mutable.MetaYN.User")
           ),
           box(title="Metastatic Stage",collapsible=T, collapsed = F,width = NULL,
               #strong("Metastasis Stage"),
@@ -114,15 +117,19 @@ dashboardPage(
                 selectInput("mutable.metastagemenu","Change Metastasic stage here:",selectize = T,
                             choices = c("",metaStageMenu)),
                 actionButton("button6","Save")
-              )
+              ),
+              strong("Last Updated by:"),
+              htmlOutput("mutable.Metastage.User")
           ),
           box(title="Molecular Target", collapsible = T, collapsed = F, width=NULL,
-              textOutput("mutable.MT"),
+              verbatimTextOutput("mutable.MT"),
               tags$form(
-                selectInput("mutable.mtmenu","Select Molecular Target here:",selectize = T,
+                selectInput("mutable.mtmenu","Select Molecular Target here:",selectize = T,multiple = T,
                             choices = c("")),
-                actionButton("button6","Save")
-              )     
+                actionButton("button3","Save")
+              ),
+              strong("Last Updated by:"),
+              htmlOutput("mutable.MT.User")
           )
          
           

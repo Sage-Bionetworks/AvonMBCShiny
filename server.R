@@ -2,18 +2,18 @@
 # Server logic for AvonMBC
 
 server <- function(input, output,session) {
-   session$sendCustomMessage(type="readCookie",
+  session$sendCustomMessage(type="readCookie",
                             message=list(name='org.sagebionetworks.security.user.login.token'))
    
-   foo <- observeEvent(input$cookie, {
+  foo <- observeEvent(input$cookie, {
     if (!is.null(input$cookie)) {
-     synapseLogin(sessionToken=input$cookie)
+      synapseLogin(sessionToken=input$cookie)
     } else {
-     synapseLogin()
+      synapseLogin()
     }
     source("load.R")
     output$userLoggedIn <- renderText({
-     sprintf("Logged in as %s", synGetUserProfile()@userName)
+      sprintf("Logged in as %s", synGetUserProfile()@userName)
     })
   
     # ---------------------------------------------
@@ -107,6 +107,18 @@ server <- function(input, output,session) {
       table.df[rowIndex, "Molecular_Target"]
     })
     
+    #Grant date start-end
+    output$Date <- renderText({
+      table.df <- tableQuery()
+      rowIndex <- input$grantTitles_rows_selected
+      date <- paste(table.df[rowIndex,"AwardStartDate"],table.df[rowIndex,"AwardEndDate"],sep="-")
+      if (date == "NA-NA") {
+        ""
+      } else {
+        date
+      }
+    })
+    
     #MBC Molecular Target Group annotation
     output$MolecularTargetGroup<-renderText({
       table.df <- tableQuery() 
@@ -136,13 +148,18 @@ server <- function(input, output,session) {
     })
     
     #Display of confidence of metastatic YN classifier
+    #Change to just probability about MBC or not about MBC
     output$MetaYNPostProb <- renderText({
       table.df <- tableQuery()
       rowIndex <- input$grantTitles_rows_selected
-      if (table.df[rowIndex,"Y_meta"] >= 0.5) {
-        paste0(round(table.df[rowIndex,"Y_meta"]*100,2),"%")
+      if (!is.na(table.df[rowIndex, "Y_meta"])) {
+        if (table.df[rowIndex,"Y_meta"] >= 0.5) {
+          paste0(round(table.df[rowIndex,"Y_meta"]*100,2),"%")
+        } else {
+          paste0(round(table.df[rowIndex,"N_meta"]*100,2),"%")
+        }
       } else {
-        paste0(round(table.df[rowIndex,"N_meta"]*100,2),"%")
+        ""
       }
     })
     
@@ -230,7 +247,7 @@ server <- function(input, output,session) {
     output$dashboard_metastage <- renderPlot({
       bars = sort(table(tolower(grant.MBC$Metastasis_stage)))
      # predicted = sort(table(paste0("predicted_",grant.MBC$Predicted_metastage)))
-      predicted = sort(table(grant.MBC$Predicted_metastage))
+      predicted = sort(table(tolower(grant.MBC$Predicted_metastage)))
       
       total <- c(bars,predicted)
       total <- total[order(names(total))]
@@ -252,13 +269,14 @@ server <- function(input, output,session) {
            label=total,po=3) 
       legend("topright",pch = c(19,19),
              col=c("grey","red"),
-             legend = c("Avon","Predicted"))
+             legend = c("Manual","Predicted"))
       f
     })
     output$dashboard_metastageLegend <- renderText(
       string <- "A&E = arrest & extravasation \nIS&E = immune surveillance/escape \nI&C = intravasation & circulation \nMD = metabolic deregulation \nMC = metastatic colonization \nNA = other/not specified"
     )
     
+    #TODO: Need to update this, Metastasis YN is whether its about metastatic cancer, not necessarily about MBC
     output$dashboard_metaYN <- renderPlot({
       bars = table(grant.df$Metastasis_YN)
       predicted = table(grant.df$Predicted_metaYN)
@@ -273,17 +291,19 @@ server <- function(input, output,session) {
       text(x = YN, y=total, label=total,po=3)
       legend("topright",pch = c(19,19),
              col=c("grey","red"),
-             legend = c("Avon","Predicted"))
+             legend = c("Manual","Predicted"))
       YN
     })
     
     output$dashboard_postmetaYN <- renderPlot({
+      
       Yes = grant.df[grant.df$Metastasis_YN == "yes","Y_meta"]
       Yes = round(Yes,2)
       No = grant.df[grant.df$Metastasis_YN == "no","Y_meta"]
       No = round(No,2)
-      plot(density(Yes),main = "MBC Relatedness",ylim=c(0,60))
-      lines(density(No),col="red")
+      # NA.rm = T for now
+      plot(density(Yes,na.rm = T),main = "MBC Relatedness",ylim=c(0,60))
+      lines(density(No,na.rm=T),col="red")
       legend("topright",pch = c(19,19),
              col=c("black","red"),
              legend = c("True MBC","True Non-MBC"))
@@ -341,6 +361,7 @@ server <- function(input, output,session) {
     # ---------------------------------------------
     # Dynamic Content - Assist in grant curation
     # ---------------------------------------------
+    # Molecular target is always part of the genelist
     output$mutable.MT <- renderText({
       table.df <- tableQuery() 
       rowIndex<-input$grantTitles_rows_selected
@@ -349,14 +370,17 @@ server <- function(input, output,session) {
       title = table.df[rowIndex,"AwardTitle"]
       Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
       rowIndex <- which(Dynamic.annotations@values$AwardTitle == title)
-      #if (mt != "") {
-      #  Dynamic.annotations@values$Molecular_Target[rowIndex] <- mt
-      #  synStore(Dynamic.annotations)
-      #  updateSelectInput(session, "mutable.mtmenu", label = "Select Molecular Target here:",selected = "")
-      #}
+      
+      if (!is.null(mt)) {
+        Dynamic.annotations@values$Molecular_Target_Link[rowIndex] <- paste0("#!Profile:",synGetUserProfile()@ownerId)
+        Dynamic.annotations@values$Molecular_Target[rowIndex] <- paste(mt, collapse="\n")
+        synStore(Dynamic.annotations)
+        updateSelectInput(session, "mutable.mtmenu", label = "Select Molecular Target here:",selected = "")
+      }
       Dynamic.annotations@values$Molecular_Target[rowIndex]
     })
     
+    # Predicted Meta YN
     output$mutable.Metayn <- renderText({
       table.df <- tableQuery() 
       rowIndex<-input$grantTitles_rows_selected
@@ -366,17 +390,29 @@ server <- function(input, output,session) {
       Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
       rowIndex <- which(Dynamic.annotations@values$AwardTitle == title)
       if (metayn != "") {
+        if (metayn == "yes") {
+          metayn = "y"
+        } else {
+          meta = "n"
+        }
+        Dynamic.annotations@values$Metastasis_YN_Link[rowIndex] <- paste0("#!Profile:",synGetUserProfile()@ownerId)
         Dynamic.annotations@values$Metastasis_YN[rowIndex] <- metayn
         synStore(Dynamic.annotations)
         updateSelectInput(session, "mutable.metaynmenu", label = "Change Metastasis (y/n) here:",selected = "")
       }
-      if (Dynamic.annotations@values$Metastasis_YN[rowIndex] =='y'){
-        'yes'
+      #If no predictions have been added yet
+      if (!is.na(Dynamic.annotations@values$Metastasis_YN[rowIndex])) {
+        if (Dynamic.annotations@values$Metastasis_YN[rowIndex] =='y'){
+          'yes'
+        } else {
+          'no'
+        }
       } else {
-        'no'
+        'No predictions'
       }
     })
     
+    # Predicted metastatic stage
     output$mutable.Metastage <- renderText({
       table.df <- tableQuery() 
       rowIndex<-input$grantTitles_rows_selected
@@ -384,14 +420,68 @@ server <- function(input, output,session) {
       metastage <- isolate(input$mutable.metastagemenu)
       title = table.df[rowIndex,"AwardTitle"]
       Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
+      #temp <- Dynamic.annotations
       rowIndex <- which(Dynamic.annotations@values$AwardTitle == title)
+      #print(head(Dynamic.annotations))
       if (metastage != "") {
+        Dynamic.annotations@values$Metastasis_stage_Link[rowIndex] <- paste0("#!Profile:",synGetUserProfile()@ownerId)
         Dynamic.annotations@values$Metastasis_stage[rowIndex] <- metastage
         synStore(Dynamic.annotations)
         #Update menu input
         updateSelectInput(session, "mutable.metastagemenu", label = "Change Metastasic stage here:", selected = "")
       }
       Dynamic.annotations@values$Metastasis_stage[rowIndex]
+    })
+    
+    #Show last user that changed metastatic stage
+    output$mutable.Metastage.User <- renderUI({
+      table.df <- tableQuery() 
+      rowIndex<-input$grantTitles_rows_selected
+      UserUpdated <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
+      title = table.df[rowIndex,"AwardTitle"]
+      rowIndex <- which(UserUpdated@values$AwardTitle == title)
+      updated = UserUpdated@values[rowIndex,"Metastasis_stage_Link"]
+      if (!is.na(updated)) {
+        userid = unlist(strsplit(updated,":"))[2]
+        username = synGetUserProfile(userid)@userName
+        tags$a(href = sprintf("https://www.synapse.org/%s",updated), username,target="_blank")
+      } else {
+        ""
+      }
+    })
+    
+    #Show last user that changed metastatic YN
+    output$mutable.MetaYN.User <- renderUI({
+      table.df <- tableQuery() 
+      rowIndex<-input$grantTitles_rows_selected
+      UserUpdated <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
+      title = table.df[rowIndex,"AwardTitle"]
+      rowIndex <- which(UserUpdated@values$AwardTitle == title)
+      updated = UserUpdated@values[rowIndex,"Metastasis_YN_Link"]
+      if (!is.na(updated)) {
+        userid = unlist(strsplit(updated,":"))[2]
+        username = synGetUserProfile(userid)@userName
+        tags$a(href = sprintf("https://www.synapse.org/%s",updated), username,target="_blank")
+      } else {
+        ""
+      }
+    })
+    
+    #Show last user that changed molecular target
+    output$mutable.MT.User <- renderUI({
+      table.df <- tableQuery() 
+      rowIndex<-input$grantTitles_rows_selected
+      UserUpdated <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
+      title = table.df[rowIndex,"AwardTitle"]
+      rowIndex <- which(UserUpdated@values$AwardTitle == title)
+      updated = UserUpdated@values[rowIndex,"Molecular_Target_Link"]
+      if (!is.na(updated)) {
+        userid = unlist(strsplit(updated,":"))[2]
+        username = synGetUserProfile(userid)@userName
+        tags$a(href = sprintf("https://www.synapse.org/%s",updated), username,target="_blank")
+      } else {
+        ""
+      }
     })
   })#Synapse shiny token session end
 }

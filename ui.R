@@ -97,9 +97,8 @@ dashboardPage(
               verbatimTextOutput("geneList")
           ),
           box(title="MBC Relatedness",collapsible=T, collapsed = F,width = NULL,
-              #strong("Metastasis"),
               textOutput("mutable.Metayn"),
-              strong("Confidence:"),
+              strong("Probability that grant is MBC related:"),
               textOutput("MetaYNPostProb"),
               tags$form(
                 selectInput("mutable.metaynmenu","Change Metastasis (y/n) here:",selectize = T,
@@ -110,7 +109,6 @@ dashboardPage(
               htmlOutput("mutable.MetaYN.User")
           ),
           box(title="Metastatic Stage",collapsible=T, collapsed = F,width = NULL,
-              #strong("Metastasis Stage"),
               textOutput("mutable.Metastage"),
               plotOutput("MetaStagePostProb"),
               tags$form(

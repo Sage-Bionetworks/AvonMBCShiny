@@ -3,9 +3,13 @@ library(synapseClient)
 library(shinydashboard)
 library(shinyBS)
 library(DT)
-#metaStageMenu <- c("arrest & extravasation","immune surveillance/escape",
-#                   "intravasation & circulation","invasion","metabolic deregulation",
-#                   "metastatic colonization","multiple","other/not specified","not annotated")
+#synapseLogin()
+#source("load.R")
+metaStageMenu <- c("arrest & extravasation","immune surveillance/escape",
+                   "intravasation & circulation","invasion","metabolic deregulation",
+                   "metastatic colonization","multiple","other/not specified","not annotated")
+metaStageMenu= sort(unique(tolower(metaStageMenu)))
+metaStageMenu = c("all",metaStageMenu)
 # ------------------------------------------------------
 # global functions
 # ------------------------------------------------------

@@ -28,17 +28,6 @@ Breast <- as.numeric(grant.df$Breast_Cancer)
 Breast[is.na(Breast)] <- 0
 grant.MBC <- grant.df[grant.df$Metastasis_YN == 'yes' & Breast >= 50,]
 
-
 allTitles <- grant.MBC$AwardTitle
 allPathways <- grant.MBC$Pathway
 allmetaStage <-grant.MBC$Metastasis_stage
-
-#Grab all words to highlight
-#highlight.keywords <- colnames(grant.df)[grep("KW*",colnames(grant.df))][-1]
-#highlight.keywords <- sub("KW_","",highlight.keywords)
-#highlight.keywords <- sub("_"," ",highlight.keywords)
-
-#Need to account for if the user wants to see grants related to multiple pathways or metastages
-metaStageMenu= sort(unique(tolower(allmetaStage)))
-metaStageMenu = c("all",metaStageMenu)
-pathwayMenu = unique(tolower(allPathways))

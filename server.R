@@ -3,18 +3,18 @@
 
 server <- function(input, output,session) {
   session$sendCustomMessage(type="readCookie",
-                            message=list(name='org.sagebionetworks.security.user.login.token'))
+                           message=list(name='org.sagebionetworks.security.user.login.token'))
    
   foo <- observeEvent(input$cookie, {
-    if (!is.null(input$cookie)) {
-      synapseLogin(sessionToken=input$cookie)
-    } else {
-      synapseLogin()
-    }
-    source("load.R")
-    output$userLoggedIn <- renderText({
-      sprintf("Logged in as %s", synGetUserProfile()@userName)
-    })
+   if (!is.null(input$cookie)) {
+     synapseLogin(sessionToken=input$cookie)
+   } else {
+     synapseLogin()
+   }
+   source("load.R")
+   output$userLoggedIn <- renderText({
+     sprintf("Logged in as %s", synGetUserProfile()@userName)
+   })
   
     # ---------------------------------------------
     # Grants (allow for querying)
@@ -39,6 +39,15 @@ server <- function(input, output,session) {
       table.df
     })
     
+    #Grant selected
+    selectGrant <- reactive({
+      validate(
+        need(!is.null(input$grantTitles_rows_selected),"Please select a grant from the grant selection tab")
+      )
+      table.df <- tableQuery() 
+      rowIndex<-input$grantTitles_rows_selected
+      table.df[rowIndex,]
+    })
     # ------------------------------------------------------------
     # Grant Selection Page
     # ------------------------------------------------------------
@@ -49,9 +58,8 @@ server <- function(input, output,session) {
     
     #NCBI connection
     output$mySite <- renderUI({
-      table.df <- tableQuery() 
-      rowIndex<-input$grantTitles_rows_selected
-      author = paste(table.df[rowIndex, c("PILastName","PIFirstName")],collapse = ", ")
+      table.df <- selectGrant()
+      author = paste(table.df[, c("PILastName","PIFirstName")],collapse = ", ")
       tags$a(href = sprintf("http://www.ncbi.nlm.nih.gov/pubmed/?term=%s+%s",author,"breast"), "NCBI resources",target="_blank")
     })
     
@@ -67,51 +75,44 @@ server <- function(input, output,session) {
     
     #PI name
     output$PIName<-renderText({
-      table.df <- tableQuery() 
-      rowIndex<-input$grantTitles_rows_selected
-      paste(table.df[rowIndex, c("PILastName","PIFirstName")],collapse = ", ")
+      table.df <- selectGrant()
+      paste(table.df[, c("PILastName","PIFirstName")],collapse = ", ")
     })
     
     #grant PI institution
     output$Institution<-renderText({
-      table.df <- tableQuery() 
-      rowIndex<-input$grantTitles_rows_selected
-      table.df[rowIndex, "Institution"]
+      table.df <- selectGrant()
+      table.df[, "Institution"]
     })
     
     #Grant title
     output$AwardTitle<-renderText({
-      table.df <- tableQuery() 
-      rowIndex<-input$grantTitles_rows_selected
-      table.df[rowIndex, "AwardTitle"]
+      table.df <- selectGrant()
+      table.df[, "AwardTitle"]
     })
     
     #Pathway annotation
     output$Pathway<-renderText({
-      table.df <- tableQuery() 
-      rowIndex<-input$grantTitles_rows_selected
-      table.df[rowIndex, "Pathway"]
+      table.df <- selectGrant()
+      table.df[, "Pathway"]
     })
     
     #pathway group annotation
     output$PathwayGroup<-renderText({
-      table.df <- tableQuery() 
-      rowIndex<-input$grantTitles_rows_selected
-      table.df[rowIndex, "Pathway_Group"]
+      table.df <- selectGrant()
+      table.df[, "Pathway_Group"]
     })
     
     #Molecular target annotation
     output$MolecularTarget<-renderText({
-      table.df <- tableQuery() 
-      rowIndex<-input$grantTitles_rows_selected
-      table.df[rowIndex, "Molecular_Target"]
+      table.df <- selectGrant()
+      table.df[, "Molecular_Target"]
     })
     
     #Grant date start-end
     output$Date <- renderText({
-      table.df <- tableQuery()
-      rowIndex <- input$grantTitles_rows_selected
-      date <- paste(table.df[rowIndex,"AwardStartDate"],table.df[rowIndex,"AwardEndDate"],sep="-")
+      table.df <- selectGrant()
+      date <- paste(table.df[,"AwardStartDate"],table.df[,"AwardEndDate"],sep="-")
       if (date == "NA-NA") {
         ""
       } else {
@@ -121,43 +122,37 @@ server <- function(input, output,session) {
     
     #MBC Molecular Target Group annotation
     output$MolecularTargetGroup<-renderText({
-      table.df <- tableQuery() 
-      rowIndex<-input$grantTitles_rows_selected
-      table.df[rowIndex, "Molecular_Target_Group"]
+      table.df <- selectGrant()
+      table.df[, "Molecular_Target_Group"]
     })
     
     #Display of MBC metastatic stage annotation
     output$MetaStage<-renderText({
-      table.df <- tableQuery() 
-      rowIndex<-input$grantTitles_rows_selected
-      table.df[rowIndex, "Metastasis_stage"]
+      table.df <- selectGrant()
+      table.df[, "Metastasis_stage"]
     })
     
     #Display of MBC Metastatic YN annotation
     output$MetaYN<-renderText({
-      table.df <- tableQuery() 
-      rowIndex<-input$grantTitles_rows_selected
-      table.df[rowIndex, "Metastasis_YN"]
+      table.df <- selectGrant()
+      table.df[, "Metastasis_YN"]
     })
     
     #Gene list annotation
     output$geneList <- renderText({
-      table.df <- tableQuery()
-      rowIndex <- input$grantTitles_rows_selected
-      text <- table.df[rowIndex, "gene_list"]
+      table.df <- selectGrant()
+      text <- table.df[, "gene_list"]
     })
     
     #Display of confidence of metastatic YN classifier
-    #Change to just probability about MBC or not about MBC
     output$MetaYNPostProb <- renderText({
-      table.df <- tableQuery()
-      rowIndex <- input$grantTitles_rows_selected
-      if (!is.na(table.df[rowIndex, "Y_meta"])) {
-        if (table.df[rowIndex,"Y_meta"] >= 0.5) {
-          paste0(round(table.df[rowIndex,"Y_meta"]*100,2),"%")
-        } else {
-          paste0(round(table.df[rowIndex,"N_meta"]*100,2),"%")
-        }
+      table.df <- selectGrant()
+      if (!is.na(table.df[, "Y_meta"])) {
+        #if (table.df[rowIndex,"Y_meta"] >= 0.5) {
+        round(table.df[,"Y_meta"],2)
+        #} else {
+        #  paste0(round(table.df[rowIndex,"N_meta"]*100,2),"%")
+        #}
       } else {
         ""
       }
@@ -165,27 +160,24 @@ server <- function(input, output,session) {
     
     # Display of metastatic stage posterior probability bar plot
     output$MetaStagePostProb <- renderPlot({
-      table.df <- tableQuery()
-      rowIndex <- input$grantTitles_rows_selected
-      invasion = table.df[rowIndex,"invasion_meta"]*100
-      arrest = table.df[rowIndex,"arrest_meta"]*100
-      immune = table.df[rowIndex,"immune_meta"]*100
-      metastatic = table.df[rowIndex,"metastatic_meta"]*100
-      intra = table.df[rowIndex,"intravasatsion_meta"]*100
-      metabolic = table.df[rowIndex,"metabolic_meta"]*100
+      table.df <- selectGrant()
+      invasion = table.df[,"invasion_meta"]
+      arrest = table.df[,"arrest_meta"]
+      immune = table.df[,"immune_meta"]
+      metastatic = table.df[,"metastatic_meta"]
+      intra = table.df[,"intravasatsion_meta"]
+      metabolic = table.df[,"metabolic_meta"]
       par(las=2,mar = c(10,3,4,2) + 0.1)
       barplot(c("Invasion" = invasion, "Arrest" = arrest,"Immune Surveillance" = immune,
                 "Metastatic Colonization" = metastatic, "Intravasation" = intra, 
                 "Metabolic Deregulation" = metabolic),main="Posterior Probabilities",
-              col = c("red","blue","grey","black","purple","green"),cex.names = 0.8,ylim=c(0,100))
+              col = c("red","blue","grey","black","purple","green"),cex.names = 0.8,ylim=c(0,1))
     })
     
     # Display of grant abstracts with highlighting of keywords
     output$TechAbstract<-renderText({
-      table.df <- tableQuery() 
-      rowIndex<-input$grantTitles_rows_selected
-      text <- table.df[rowIndex, "TechAbstract"]
-      
+      table.df <- selectGrant()
+      text <- table.df[, "TechAbstract"]
       for (word in highlight.keywords) {
         text <- gsub(sprintf(" %s",word), sprintf(' <span style="background-color: #FFFF00">%s</span>',word),text,fixed=T)
       }
@@ -196,9 +188,8 @@ server <- function(input, output,session) {
     # ------------------------------------
     #For san antonio abstract list pop up 
     output$sanantonio_abstracts <- DT::renderDataTable({
-      table.df <- tableQuery()
-      rowIndex <- input$grantTitles_rows_selected
-      abstracts <- table.df[rowIndex, "SanAntonio_Abstracts"]
+      table.df <- selectGrant()
+      abstracts <- table.df[, "SanAntonio_Abstracts"]
       abstracts <- unlist(strsplit(abstracts,","))
       abstract_table <- sanantonio[sanantonio$control  %in% abstracts,]
       DT::datatable(abstract_table[,c('title','Authors','inst','sess_date')],selection = 'single')
@@ -206,9 +197,8 @@ server <- function(input, output,session) {
     
     #For pop up of san antonio abstract text 
     output$sanantonio_text <- renderText({
-      table.df <- tableQuery()
-      rowIndex <- input$grantTitles_rows_selected
-      abstracts <- table.df[rowIndex, "SanAntonio_Abstracts"]
+      table.df <- selectGrant()
+      abstracts <- table.df[, "SanAntonio_Abstracts"]
       abstracts <- unlist(strsplit(abstracts,","))
       abstract_table <- sanantonio[sanantonio$control  %in% abstracts,]
       text <- abstract_table[,'body1']
@@ -232,9 +222,8 @@ server <- function(input, output,session) {
     observeEvent({
       input$grantTitles_rows_selected
     }, {
-      table.df <- tableQuery()
-      rowIndex <- input$grantTitles_rows_selected
-      text <- table.df[rowIndex, "gene_list"]
+      table.df <- selectGrant()
+      text <- table.df[, "gene_list"]
       text <- unlist(strsplit(text,"\n"))
       updateTabItems(session, "tabs","GrantInfo")
       updateSelectInput(session, "mutable.mtmenu", label = "Select Molecular Target here:", choices = c("",text), selected = "")
@@ -245,25 +234,23 @@ server <- function(input, output,session) {
     # ---------------------------------------------
     
     output$dashboard_metastage <- renderPlot({
-      bars = sort(table(tolower(grant.MBC$Metastasis_stage)))
-     # predicted = sort(table(paste0("predicted_",grant.MBC$Predicted_metastage)))
-      predicted = sort(table(tolower(grant.MBC$Predicted_metastage)))
+      Manual = table(tolower(grant.MBC$Metastasis_stage))
+      pred = factor(tolower(grant.MBC$Predicted_metastage),levels = names(Manual))
+      Predicted = table(pred)
+
+      total <- rbind(Manual,Predicted)
+      colnames(total)[colnames(total) == "arrest & extravasation"] <- "A&E"
+      colnames(total)[colnames(total) == "immune surveillance/escape"] <- "IS&E"
+      colnames(total)[colnames(total) == "intravasation & circulation"] <- "I&C"
+      colnames(total)[colnames(total) == "metabolic deregulation"] <- "MD"
+      colnames(total)[colnames(total) == "metastatic colonization"] <- "MC"
+      colnames(total)[colnames(total) == "other/not specified"] <- "NA"
       
-      total <- c(bars,predicted)
-      total <- total[order(names(total))]
-      names(total)[names(total) == "arrest & extravasation"] <- "A&E"
-      names(total)[names(total) == "immune surveillance/escape"] <- "IS&E"
-      names(total)[names(total) == "intravasation & circulation"] <- "I&C"
-      names(total)[names(total) == "metabolic deregulation"] <- "MD"
-      names(total)[names(total) == "metastatic colonization"] <- "MC"
-      names(total)[names(total) == "other/not specified"] <- "NA"
-      
-      #total <- table(grant.MBC$Predicted_metastage,tolower(grant.MBC$Metastasis_stage))
       par(las=2)
       f <- barplot(total,
                    main="Distribution of Metastatic Stages",
-                   cex.names = 0.75,ylim = c(0,1500),ylab = "Number of Grants",beside=TRUE,
-                   col=c("grey","red","grey","red","grey","red","grey","red","grey","red","grey","red","grey","grey"))
+                   cex.names = 0.75,ylim = c(0,2000),ylab = "Number of Grants",beside=TRUE,
+                   col=c("grey","red"))
       text(x=f,
            y=total,
            label=total,po=3) 
@@ -272,22 +259,23 @@ server <- function(input, output,session) {
              legend = c("Manual","Predicted"))
       f
     })
+    
+    #Metastatic stage text legend
     output$dashboard_metastageLegend <- renderText(
       string <- "A&E = arrest & extravasation \nIS&E = immune surveillance/escape \nI&C = intravasation & circulation \nMD = metabolic deregulation \nMC = metastatic colonization \nNA = other/not specified"
     )
     
     #TODO: Need to update this, Metastasis YN is whether its about metastatic cancer, not necessarily about MBC
     output$dashboard_metaYN <- renderPlot({
-      bars = table(grant.df$Metastasis_YN)
-      predicted = table(grant.df$Predicted_metaYN)
-      
-      total = c(bars,predicted)
-      total <- total[order(names(total))]
+      Manual = table(grant.df$Metastasis_YN)
+      Predicted = table(grant.df$Predicted_metaYN)
+      total = rbind(Manual, Predicted)
       YN <- barplot(total,
                  main = "Distribution of Grants",
                  ylim = c(0,15500),xlab="Metastatic Breast Cancer Related",
                  ylab = "Number of Grants",
-                 col=c("grey","red"))
+                 col=c("grey","red"),
+                 beside=T)
       text(x = YN, y=total, label=total,po=3)
       legend("topright",pch = c(19,19),
              col=c("grey","red"),
@@ -296,7 +284,6 @@ server <- function(input, output,session) {
     })
     
     output$dashboard_postmetaYN <- renderPlot({
-      
       Yes = grant.df[grant.df$Metastasis_YN == "yes","Y_meta"]
       Yes = round(Yes,2)
       No = grant.df[grant.df$Metastasis_YN == "no","Y_meta"]
@@ -326,6 +313,7 @@ server <- function(input, output,session) {
     })
     
     output$dashboard_metaYN_stats <- renderText({
+      grant.df <- grant.df[!is.na(grant.df$Predicted_metaYN),]
       scores <- confusionMatrix_scores(true = grant.df$Metastasis_YN,pred = grant.df$Predicted_metaYN,positive = "yes")
       paste0("Sensitivity (TPR): ",scores[1],"\nSpecificity (TNR): ",scores[2])
     })
@@ -363,11 +351,10 @@ server <- function(input, output,session) {
     # ---------------------------------------------
     # Molecular target is always part of the genelist
     output$mutable.MT <- renderText({
-      table.df <- tableQuery() 
-      rowIndex<-input$grantTitles_rows_selected
+      table.df <- selectGrant()
       input$button3
       mt <- isolate(input$mutable.mtmenu)
-      title = table.df[rowIndex,"AwardTitle"]
+      title = table.df[,"AwardTitle"]
       Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
       rowIndex <- which(Dynamic.annotations@values$AwardTitle == title)
       
@@ -382,11 +369,10 @@ server <- function(input, output,session) {
     
     # Predicted Meta YN
     output$mutable.Metayn <- renderText({
-      table.df <- tableQuery() 
-      rowIndex<-input$grantTitles_rows_selected
+      table.df <- selectGrant()
       input$button5
       metayn <- isolate(input$mutable.metaynmenu)
-      title = table.df[rowIndex,"AwardTitle"]
+      title = table.df[,"AwardTitle"]
       Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
       rowIndex <- which(Dynamic.annotations@values$AwardTitle == title)
       if (metayn != "") {
@@ -414,11 +400,10 @@ server <- function(input, output,session) {
     
     # Predicted metastatic stage
     output$mutable.Metastage <- renderText({
-      table.df <- tableQuery() 
-      rowIndex<-input$grantTitles_rows_selected
+      table.df <- selectGrant()
       input$button6
       metastage <- isolate(input$mutable.metastagemenu)
-      title = table.df[rowIndex,"AwardTitle"]
+      title = table.df[,"AwardTitle"]
       Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
       #temp <- Dynamic.annotations
       rowIndex <- which(Dynamic.annotations@values$AwardTitle == title)
@@ -435,13 +420,12 @@ server <- function(input, output,session) {
     
     #Show last user that changed metastatic stage
     output$mutable.Metastage.User <- renderUI({
-      table.df <- tableQuery() 
-      rowIndex<-input$grantTitles_rows_selected
+      table.df <- selectGrant()
       UserUpdated <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
-      title = table.df[rowIndex,"AwardTitle"]
+      title = table.df[,"AwardTitle"]
       rowIndex <- which(UserUpdated@values$AwardTitle == title)
       updated = UserUpdated@values[rowIndex,"Metastasis_stage_Link"]
-      if (!is.na(updated)) {
+      if (!is.na(updated) & updated != "") {
         userid = unlist(strsplit(updated,":"))[2]
         username = synGetUserProfile(userid)@userName
         tags$a(href = sprintf("https://www.synapse.org/%s",updated), username,target="_blank")
@@ -452,13 +436,12 @@ server <- function(input, output,session) {
     
     #Show last user that changed metastatic YN
     output$mutable.MetaYN.User <- renderUI({
-      table.df <- tableQuery() 
-      rowIndex<-input$grantTitles_rows_selected
+      table.df <- selectGrant()
       UserUpdated <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
-      title = table.df[rowIndex,"AwardTitle"]
+      title = table.df[,"AwardTitle"]
       rowIndex <- which(UserUpdated@values$AwardTitle == title)
       updated = UserUpdated@values[rowIndex,"Metastasis_YN_Link"]
-      if (!is.na(updated)) {
+      if (!is.na(updated) & updated != "") {
         userid = unlist(strsplit(updated,":"))[2]
         username = synGetUserProfile(userid)@userName
         tags$a(href = sprintf("https://www.synapse.org/%s",updated), username,target="_blank")
@@ -469,13 +452,12 @@ server <- function(input, output,session) {
     
     #Show last user that changed molecular target
     output$mutable.MT.User <- renderUI({
-      table.df <- tableQuery() 
-      rowIndex<-input$grantTitles_rows_selected
+      table.df <- selectGrant()
       UserUpdated <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
-      title = table.df[rowIndex,"AwardTitle"]
+      title = table.df[,"AwardTitle"]
       rowIndex <- which(UserUpdated@values$AwardTitle == title)
       updated = UserUpdated@values[rowIndex,"Molecular_Target_Link"]
-      if (!is.na(updated)) {
+      if (!is.na(updated) & updated != "") {
         userid = unlist(strsplit(updated,":"))[2]
         username = synGetUserProfile(userid)@userName
         tags$a(href = sprintf("https://www.synapse.org/%s",updated), username,target="_blank")

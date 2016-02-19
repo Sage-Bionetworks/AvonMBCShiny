@@ -24,7 +24,11 @@ grant.df$Predicted_metaYN[grant.df$Predicted_metaYN == 'y'] <- 'yes'
 grant.df$Predicted_metaYN[grant.df$Predicted_metaYN == 'n'] <- 'no'
 
 #grant.df$ROW_INDEX <- paste(grant.df$ROW_ID,grant.df$ROW_VERSION,sep="_")
-grant.MBC <- grant.df[grant.df$Metastasis_YN == 'yes',]
+Breast <- as.numeric(grant.df$Breast_Cancer)
+Breast[is.na(Breast)] <- 0
+grant.MBC <- grant.df[grant.df$Metastasis_YN == 'yes' & Breast >= 50,]
+
+
 allTitles <- grant.MBC$AwardTitle
 allPathways <- grant.MBC$Pathway
 allmetaStage <-grant.MBC$Metastasis_stage

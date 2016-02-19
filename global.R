@@ -3,9 +3,9 @@ library(synapseClient)
 library(shinydashboard)
 library(shinyBS)
 library(DT)
-metaStageMenu <- c("arrest & extravasation","immune surveillance/escape",
-                   "intravasation & circulation","invasion","metabolic deregulation",
-                   "metastatic colonization","multiple","other/not specified")
+#metaStageMenu <- c("arrest & extravasation","immune surveillance/escape",
+#                   "intravasation & circulation","invasion","metabolic deregulation",
+#                   "metastatic colonization","multiple","other/not specified","not annotated")
 # ------------------------------------------------------
 # global functions
 # ------------------------------------------------------

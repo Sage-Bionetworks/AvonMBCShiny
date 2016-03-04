@@ -48,6 +48,18 @@ server <- function(input, output,session) {
       rowIndex<-input$grantTitles_rows_selected
       table.df[rowIndex,]
     })
+    
+    #Prepare data for download 
+    output$download_data <- downloadHandler(
+      filename = function() {'MBC_data.csv'},
+      content  = function(file){
+        res <- tableQuery()
+       # mat <- exprs(res)        
+       # df <- cbind(data.frame(ID=rownames(mat)),
+      #              as.data.frame(mat))
+        write.csv(res, file, row.names=F)
+      }
+    )
     # ------------------------------------------------------------
     # Grant Selection Page
     # ------------------------------------------------------------
@@ -355,16 +367,15 @@ server <- function(input, output,session) {
       input$button3
       mt <- isolate(input$mutable.mtmenu)
       title = table.df[,"AwardTitle"]
-      Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
-      rowIndex <- which(Dynamic.annotations@values$AwardTitle == title)
-      
+      Dynamic.annotations <-synTableQuery(sprintf("SELECT * FROM syn5584661 where AwardTitle='%s'",title),filePath = ".")
+    
       if (!is.null(mt)) {
-        Dynamic.annotations@values$Molecular_Target_Link[rowIndex] <- paste0("#!Profile:",synGetUserProfile()@ownerId)
-        Dynamic.annotations@values$Molecular_Target[rowIndex] <- paste(mt, collapse="\n")
+        Dynamic.annotations@values$Molecular_Target_Link <- paste0("#!Profile:",synGetUserProfile()@ownerId)
+        Dynamic.annotations@values$Molecular_Target <- paste(mt, collapse="\n")
         synStore(Dynamic.annotations)
         updateSelectInput(session, "mutable.mtmenu", label = "Select Molecular Target here:",selected = "")
       }
-      Dynamic.annotations@values$Molecular_Target[rowIndex]
+      Dynamic.annotations@values$Molecular_Target
     })
     
     # Predicted Meta YN
@@ -373,22 +384,21 @@ server <- function(input, output,session) {
       input$button5
       metayn <- isolate(input$mutable.metaynmenu)
       title = table.df[,"AwardTitle"]
-      Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
-      rowIndex <- which(Dynamic.annotations@values$AwardTitle == title)
+      Dynamic.annotations <-synTableQuery(sprintf("SELECT * FROM syn5584661 where AwardTitle='%s'",title),filePath = ".")
       if (metayn != "") {
         if (metayn == "yes") {
           metayn = "y"
         } else {
-          meta = "n"
+          metayn = "n"
         }
-        Dynamic.annotations@values$Metastasis_YN_Link[rowIndex] <- paste0("#!Profile:",synGetUserProfile()@ownerId)
-        Dynamic.annotations@values$Metastasis_YN[rowIndex] <- metayn
+        Dynamic.annotations@values$Metastasis_YN_Link <- paste0("#!Profile:",synGetUserProfile()@ownerId)
+        Dynamic.annotations@values$Metastasis_YN <- metayn
         synStore(Dynamic.annotations)
         updateSelectInput(session, "mutable.metaynmenu", label = "Change Metastasis (y/n) here:",selected = "")
       }
       #If no predictions have been added yet
-      if (!is.na(Dynamic.annotations@values$Metastasis_YN[rowIndex])) {
-        if (Dynamic.annotations@values$Metastasis_YN[rowIndex] =='y'){
+      if (!is.na(Dynamic.annotations@values$Metastasis_YN) & Dynamic.annotations@values$Metastasis_YN !="") {
+        if (Dynamic.annotations@values$Metastasis_YN =='y'){
           'yes'
         } else {
           'no'
@@ -404,27 +414,23 @@ server <- function(input, output,session) {
       input$button6
       metastage <- isolate(input$mutable.metastagemenu)
       title = table.df[,"AwardTitle"]
-      Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
-      #temp <- Dynamic.annotations
-      rowIndex <- which(Dynamic.annotations@values$AwardTitle == title)
-      #print(head(Dynamic.annotations))
+      Dynamic.annotations <-synTableQuery(sprintf("SELECT * FROM syn5584661 where AwardTitle='%s'",title),filePath = ".")
       if (metastage != "") {
-        Dynamic.annotations@values$Metastasis_stage_Link[rowIndex] <- paste0("#!Profile:",synGetUserProfile()@ownerId)
-        Dynamic.annotations@values$Metastasis_stage[rowIndex] <- metastage
+        Dynamic.annotations@values$Metastasis_stage_Link <- paste0("#!Profile:",synGetUserProfile()@ownerId)
+        Dynamic.annotations@values$Metastasis_stage <- metastage
         synStore(Dynamic.annotations)
         #Update menu input
         updateSelectInput(session, "mutable.metastagemenu", label = "Change Metastasic stage here:", selected = "")
       }
-      Dynamic.annotations@values$Metastasis_stage[rowIndex]
+      Dynamic.annotations@values$Metastasis_stage
     })
     
     #Show last user that changed metastatic stage
     output$mutable.Metastage.User <- renderUI({
       table.df <- selectGrant()
-      UserUpdated <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
       title = table.df[,"AwardTitle"]
-      rowIndex <- which(UserUpdated@values$AwardTitle == title)
-      updated = UserUpdated@values[rowIndex,"Metastasis_stage_Link"]
+      UserUpdated <-synTableQuery(sprintf("SELECT * FROM syn5584661 where AwardTitle='%s'",title),filePath = ".")
+      updated = UserUpdated@values$Metastasis_stage_Link
       if (!is.na(updated) & updated != "") {
         userid = unlist(strsplit(updated,":"))[2]
         username = synGetUserProfile(userid)@userName
@@ -437,10 +443,9 @@ server <- function(input, output,session) {
     #Show last user that changed metastatic YN
     output$mutable.MetaYN.User <- renderUI({
       table.df <- selectGrant()
-      UserUpdated <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
       title = table.df[,"AwardTitle"]
-      rowIndex <- which(UserUpdated@values$AwardTitle == title)
-      updated = UserUpdated@values[rowIndex,"Metastasis_YN_Link"]
+      UserUpdated <-synTableQuery(sprintf("SELECT * FROM syn5584661 where AwardTitle='%s'",title),filePath = ".")
+      updated = UserUpdated@values$Metastasis_YN_Link
       if (!is.na(updated) & updated != "") {
         userid = unlist(strsplit(updated,":"))[2]
         username = synGetUserProfile(userid)@userName
@@ -453,10 +458,9 @@ server <- function(input, output,session) {
     #Show last user that changed molecular target
     output$mutable.MT.User <- renderUI({
       table.df <- selectGrant()
-      UserUpdated <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
       title = table.df[,"AwardTitle"]
-      rowIndex <- which(UserUpdated@values$AwardTitle == title)
-      updated = UserUpdated@values[rowIndex,"Molecular_Target_Link"]
+      UserUpdated <-synTableQuery(sprintf("SELECT * FROM syn5584661 where AwardTitle='%s'",title),filePath = ".")
+      updated = UserUpdated@values$Molecular_Target_Link
       if (!is.na(updated) & updated != "") {
         userid = unlist(strsplit(updated,":"))[2]
         username = synGetUserProfile(userid)@userName

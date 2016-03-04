@@ -33,7 +33,10 @@ dashboardPage(
                                            choices = metaStageMenu,selected = "all"))
           ), 
           box(title="Number of Grants",width = 4,status = "info",
-                 textOutput("numGrants")
+              textOutput("numGrants"),
+              # Download box,
+              strong("Download Grants"),
+              downloadButton(outputId='download_data', label='Download')
           )
         ),
         

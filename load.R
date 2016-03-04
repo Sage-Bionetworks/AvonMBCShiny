@@ -1,7 +1,3 @@
-#Dynamic content
-Dynamic.annotations <-synTableQuery("SELECT * FROM syn5584661",filePath = ".")
-#There are duplicated award titles
-
 #List all the downloaded files if the table has been updated a new file will be downloaded, 
 #then delete the old file to save space
 annotation.Names = list.files(".","Job-*")

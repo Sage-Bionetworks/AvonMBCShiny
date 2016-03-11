@@ -10,6 +10,11 @@ metaStageMenu <- c("arrest & extravasation","immune surveillance/escape",
                    "metastatic colonization","multiple","other/not specified","not annotated")
 metaStageMenu= sort(unique(tolower(metaStageMenu)))
 metaStageMenu = c("all",metaStageMenu)
+mutablemetastage = c("arrest & extravasation","immune surveillance/escape",
+                     "intravasation & circulation","invasion","metabolic deregulation",
+                     "metastatic colonization","other/not specified","not annotated")
+pathways = read.csv("../AvonMBC/pathways/all_pathways.tsv",sep="\t")
+pathways = pathways$Pathways
 # ------------------------------------------------------
 # global functions
 # ------------------------------------------------------

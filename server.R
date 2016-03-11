@@ -415,9 +415,9 @@ server <- function(input, output,session) {
       metastage <- isolate(input$mutable.metastagemenu)
       title = table.df[,"AwardTitle"]
       Dynamic.annotations <-synTableQuery(sprintf("SELECT * FROM syn5584661 where AwardTitle='%s'",title),filePath = ".")
-      if (metastage != "") {
+      if (!is.null(metastage)) {
         Dynamic.annotations@values$Metastasis_stage_Link <- paste0("#!Profile:",synGetUserProfile()@ownerId)
-        Dynamic.annotations@values$Metastasis_stage <- metastage
+        Dynamic.annotations@values$Metastasis_stage <- paste(metastage, collapse="\n")
         synStore(Dynamic.annotations)
         #Update menu input
         updateSelectInput(session, "mutable.metastagemenu", label = "Change Metastasic stage here:", selected = "")

@@ -123,9 +123,9 @@ dashboardPage(
                        htmlOutput("mutable.MT.User")
                    ),
                    box(title="Pathway", collapsible = T, collapsed = F, width=NULL,
-                       #verbatimTextOutput("mutable.MT"),
+                       verbatimTextOutput("mutable.Pathway"),
                        tags$form(
-                         selectInput("mutable.pathway","Select Pathway here:",selectize = T,multiple = T,
+                         selectInput("mutable.pathwaymenu","Select Pathway here:",selectize = T,multiple = T,
                                      choices = pathways),
                          actionButton("button4","Save")
                        ),

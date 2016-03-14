@@ -425,6 +425,38 @@ server <- function(input, output,session) {
       Dynamic.annotations@values$Metastasis_stage
     })
     
+    # Ability to change pathway
+    output$mutable.Pathway <- renderText({
+      table.df <- selectGrant()
+      input$button6
+      pathway <- isolate(input$mutable.pathwaymenu)
+      title = table.df[,"AwardTitle"]
+      Dynamic.annotations <-synTableQuery(sprintf("SELECT * FROM syn5584661 where AwardTitle='%s'",title),filePath = ".")
+      if (!is.null(pathway)) {
+        Dynamic.annotations@values$Pathway_Link <- paste0("#!Profile:",synGetUserProfile()@ownerId)
+        Dynamic.annotations@values$Pathway <- paste(metastage, collapse="\n")
+        synStore(Dynamic.annotations)
+        #Update menu input
+        updateSelectInput(session, "mutable.pathwaymenu", label = "Change Pathway here:", selected = "")
+      }
+      Dynamic.annotations@values$Pathway
+    })
+    
+    #Show last user that changed pathway
+    output$mutable.Pathway.User <- renderUI({
+      table.df <- selectGrant()
+      title = table.df[,"AwardTitle"]
+      UserUpdated <-synTableQuery(sprintf("SELECT * FROM syn5584661 where AwardTitle='%s'",title),filePath = ".")
+      updated = UserUpdated@values$Pathway_Link
+      if (!is.na(updated) & updated != "") {
+        userid = unlist(strsplit(updated,":"))[2]
+        username = synGetUserProfile(userid)@userName
+        tags$a(href = sprintf("https://www.synapse.org/%s",updated), username,target="_blank")
+      } else {
+        ""
+      }
+    })
+    
     #Show last user that changed metastatic stage
     output$mutable.Metastage.User <- renderUI({
       table.df <- selectGrant()

@@ -48,7 +48,8 @@ server <- function(input, output,session) {
       rowIndex<-input$grantTitles_rows_selected
       table.df[rowIndex,]
     })
-    
+    #<- creates variables that are designated to local sessions
+    profile <- synGetUserProfile()
     #Prepare data for download 
     output$download_data <- downloadHandler(
       filename = function() {'MBC_data.csv'},
@@ -370,7 +371,7 @@ server <- function(input, output,session) {
       Dynamic.annotations <-synTableQuery(sprintf("SELECT * FROM syn5584661 where AwardTitle='%s'",title),filePath = ".")
     
       if (!is.null(mt)) {
-        Dynamic.annotations@values$Molecular_Target_Link <- paste0("#!Profile:",synGetUserProfile()@ownerId)
+        Dynamic.annotations@values$Molecular_Target_Link <- paste0("#!Profile:",profile@ownerId)
         Dynamic.annotations@values$Molecular_Target <- paste(mt, collapse="\n")
         synStore(Dynamic.annotations)
         updateSelectInput(session, "mutable.mtmenu", label = "Select Molecular Target here:",selected = "")
@@ -391,7 +392,7 @@ server <- function(input, output,session) {
         } else {
           metayn = "n"
         }
-        Dynamic.annotations@values$Metastasis_YN_Link <- paste0("#!Profile:",synGetUserProfile()@ownerId)
+        Dynamic.annotations@values$Metastasis_YN_Link <- paste0("#!Profile:",profile@ownerId)
         Dynamic.annotations@values$Metastasis_YN <- metayn
         synStore(Dynamic.annotations)
         updateSelectInput(session, "mutable.metaynmenu", label = "Change Metastasis (y/n) here:",selected = "")
@@ -416,7 +417,7 @@ server <- function(input, output,session) {
       title = table.df[,"AwardTitle"]
       Dynamic.annotations <-synTableQuery(sprintf("SELECT * FROM syn5584661 where AwardTitle='%s'",title),filePath = ".")
       if (!is.null(metastage)) {
-        Dynamic.annotations@values$Metastasis_stage_Link <- paste0("#!Profile:",synGetUserProfile()@ownerId)
+        Dynamic.annotations@values$Metastasis_stage_Link <- paste0("#!Profile:",profile@ownerId)
         Dynamic.annotations@values$Metastasis_stage <- paste(metastage, collapse="\n")
         synStore(Dynamic.annotations)
         #Update menu input
@@ -428,13 +429,13 @@ server <- function(input, output,session) {
     # Ability to change pathway
     output$mutable.Pathway <- renderText({
       table.df <- selectGrant()
-      input$button6
+      input$button4
       pathway <- isolate(input$mutable.pathwaymenu)
       title = table.df[,"AwardTitle"]
       Dynamic.annotations <-synTableQuery(sprintf("SELECT * FROM syn5584661 where AwardTitle='%s'",title),filePath = ".")
       if (!is.null(pathway)) {
-        Dynamic.annotations@values$Pathway_Link <- paste0("#!Profile:",synGetUserProfile()@ownerId)
-        Dynamic.annotations@values$Pathway <- paste(metastage, collapse="\n")
+        Dynamic.annotations@values$Pathway_Link <- paste0("#!Profile:",profile@ownerId)
+        Dynamic.annotations@values$Pathway <- paste(pathway, collapse="\n")
         synStore(Dynamic.annotations)
         #Update menu input
         updateSelectInput(session, "mutable.pathwaymenu", label = "Change Pathway here:", selected = "")

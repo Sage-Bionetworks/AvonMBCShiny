@@ -1,25 +1,9 @@
-Basic Shiny application for use on Sage Bionetwork's Synapse web portal.
+Shiny Application for Avon-MBC
 
 ## Credits
 
-- Author: [duncan-palmer](https://github.com/duncan-palmer)
-- Contributors: [kdaily](https://github.com/kdaily)
+- Author: [thomasyu888](https://github.com/thomasyu888)
 
 ## Introduction
 
-Shiny applications are a powerful way to develop interactive data visualization and manipulation interfaces. However, when using with Synapse, user authentication is an issue - whomever the Shiny application is running as will determine the access that users visiting the application will have.
-
-This solution allows to determine which user is currently logged into Synapse through the web browser. These credentials are passed on to the Shiny app, and that specific user is logged in. Subsequent interactions with Synapse to pull data for the Shiny interface then happens as that user.
-
-## Usage
-
-To create a new Shiny application based on this structure, do *not* fork this repository directly on GitHub. Instead, please use GitHub's importer following the instructions [below](#creating-a-repository).
- 
-### Creating a New Shiny App Repository
-
-1.  Go to [GitHub's importer](http://import.github.com/new?import_url=https://github.com/Sage-Bionetworks/SynapseShinyApp).
-1.  Click on "Check the URL".  (GitHub won't import until you've done this.)
-1.  Select the owner for your repository (This will probably be you, but may instead be an organization you belong to).
-1.  Choose a name for your repository.
-
-You can now click "Begin Import". When the process is done, you can click "Continue to repository" to visit your newly-created repository.
+MBC alliance is an advocacy group to making sure there is sufficient funding for metastatic breast cancer.  In the past, the grant annotation process is done entirely manually.  Through machine learning and shiny, this interactive platform can assist in grant annotation, curation and review.

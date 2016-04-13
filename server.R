@@ -207,9 +207,29 @@ server <- function(input, output,session) {
       abstract_table <- sanantonio[sanantonio$control  %in% abstracts,]
       DT::datatable(abstract_table[,c('title','Authors','inst','sess_date')],selection = 'single')
     },server=F)
+
     
     #For pop up of san antonio abstract text 
     output$sanantonio_text <- renderText({
+      table.df <- selectGrant()
+      abstracts <- table.df[, "SanAntonio_Abstracts"]
+      abstracts <- unlist(strsplit(abstracts,","))
+      abstract_table <- sanantonio[sanantonio$control  %in% abstracts,]
+      text <- abstract_table[,'body1']
+      text <- gsub("\\[plusmn\\]","\\&plusmn\\;",text)
+      text <- gsub("\\[","\\<",text)
+      text <- gsub("\\]","\\>",text)
+    })
+    
+    output$sanantonio_dist <- DT::renderDataTable({
+      table.df <- selectGrant()
+      abstracts <- table.df[, "SA_MBC_Dist"]
+      abstracts <- unlist(strsplit(abstracts,","))
+      abstract_table <- sanantonio[sanantonio$control  %in% abstracts,]
+      DT::datatable(abstract_table[,c('title','Authors','inst','sess_date')],selection = 'single')
+    },server=F)
+    
+    output$sanantonio_distabstracts <- renderText({
       table.df <- selectGrant()
       abstracts <- table.df[, "SanAntonio_Abstracts"]
       abstracts <- unlist(strsplit(abstracts,","))
@@ -229,6 +249,13 @@ server <- function(input, output,session) {
       input$sanantonio_abstracts_rows_selected
     }, {
       toggleModal(session, "abstractText","open")
+    })
+    
+    observeEvent({
+      #input[[paste("sanantonio_abstracts","rows_selected",sep="_")]]
+      input$sanantonio_dist_rows_selected
+    }, {
+      toggleModal(session, "abstractText_dist","open")
     })
     
     # When you click on a grant, go to grant info

@@ -61,7 +61,8 @@ dashboardPage(
                 textOutput("Institution"),
                 textOutput("Date"),
                 htmlOutput("mySite"),
-                actionButton("tabBut", "View Related San Antonio Abstracts")
+                actionButton("tabBut", "View Related San Antonio Abstracts by Author"),
+                actionButton("SA_dist", "View Top 20 Related San Antonio Abstracts by Text")
             ),
             box(title="MBC annotations",width = 4,collapsible=T, collapsed = F,status = "info",
                 tags$style(type='text/css', '#Pathway {font-size:10px;}'),
@@ -147,7 +148,12 @@ dashboardPage(
                         DT::dataTableOutput("sanantonio_abstracts")),
                 bsModal("abstractText", "Abstract Text", "rowtogg", size="large",
                         tags$style(type='text/css', '#sanantonio_text {font-size:10px;}'),
-                        htmlOutput("sanantonio_text"))
+                        htmlOutput("sanantonio_text")),
+                bsModal("modal_dist", "Data Table", "SA_dist", size = "large",
+                        DT::dataTableOutput("sanantonio_dist")),
+                bsModal("abstractText_dist", "Abstract Text", "rowtogg", size="large",
+                        tags$style(type='text/css', '#sanantonio_distabstracts {font-size:10px;}'),
+                        htmlOutput("sanantonio_distabstracts"))
             )
           )
           

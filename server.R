@@ -231,7 +231,7 @@ server <- function(input, output,session) {
     
     output$sanantonio_distabstracts <- renderText({
       table.df <- selectGrant()
-      abstracts <- table.df[, "SanAntonio_Abstracts"]
+      abstracts <- table.df[, "SA_MBC_Dist"]
       abstracts <- unlist(strsplit(abstracts,","))
       abstract_table <- sanantonio[sanantonio$control  %in% abstracts,]
       text <- abstract_table[,'body1']

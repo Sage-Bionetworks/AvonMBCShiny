@@ -66,7 +66,7 @@ server <- function(input, output,session) {
     # ------------------------------------------------------------
     #show list of grants
     output$grantTitles <- DT::renderDataTable({
-      DT::datatable(tableQuery()[,c("AwardTitle","PIFirstName","PILastName","Institution")],selection = 'single')
+      DT::datatable(tableQuery()[,c("AwardTitle","PIFirstName","PILastName","Institution")],selection = 'single',rownames = FALSE)
     },server=F)
     
     #NCBI connection
@@ -205,7 +205,7 @@ server <- function(input, output,session) {
       abstracts <- table.df[, "SanAntonio_Abstracts"]
       abstracts <- unlist(strsplit(abstracts,","))
       abstract_table <- sanantonio[sanantonio$control  %in% abstracts,]
-      DT::datatable(abstract_table[,c('title','Authors','inst','sess_date')],selection = 'single')
+      DT::datatable(abstract_table[,c('title','Authors','inst','sess_date')],options = list(pageLength=5),selection = 'single',rownames = FALSE)
     },server=F)
 
     
@@ -215,7 +215,7 @@ server <- function(input, output,session) {
       abstracts <- table.df[, "SanAntonio_Abstracts"]
       abstracts <- unlist(strsplit(abstracts,","))
       abstract_table <- sanantonio[sanantonio$control  %in% abstracts,]
-      text <- abstract_table[,'body1']
+      text <- abstract_table[,'body1'][input$sanantonio_abstracts_rows_selected]
       text <- gsub("\\[plusmn\\]","\\&plusmn\\;",text)
       text <- gsub("\\[","\\<",text)
       text <- gsub("\\]","\\>",text)
@@ -226,7 +226,7 @@ server <- function(input, output,session) {
       abstracts <- table.df[, "SA_MBC_Dist"]
       abstracts <- unlist(strsplit(abstracts,","))
       abstract_table <- sanantonio[sanantonio$control  %in% abstracts,]
-      DT::datatable(abstract_table[,c('title','Authors','inst','sess_date')],selection = 'single')
+      DT::datatable(abstract_table[,c('title','Authors','inst','sess_date')],options = list(pageLength=5),selection = 'single',rownames = FALSE)
     },server=F)
     
     output$sanantonio_distabstracts <- renderText({
@@ -234,7 +234,7 @@ server <- function(input, output,session) {
       abstracts <- table.df[, "SA_MBC_Dist"]
       abstracts <- unlist(strsplit(abstracts,","))
       abstract_table <- sanantonio[sanantonio$control  %in% abstracts,]
-      text <- abstract_table[,'body1']
+      text <- abstract_table[,'body1'][input$sanantonio_dist_rows_selected]
       text <- gsub("\\[plusmn\\]","\\&plusmn\\;",text)
       text <- gsub("\\[","\\<",text)
       text <- gsub("\\]","\\>",text)

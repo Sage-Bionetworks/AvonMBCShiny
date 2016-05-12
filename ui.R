@@ -7,7 +7,8 @@ dashboardPage(
     sidebarMenu(id = "tabs",
       menuItem("Project Dashboard", tabName = "projDash", icon = icon("dashboard")),
       menuItem("Grant Selection", tabName = "GrantSel", icon = icon("dashboard")),
-      menuItem("Grant Information", tabName = "GrantInfo", icon = icon("dashboard"))
+      menuItem("Grant Information", tabName = "GrantInfo", icon = icon("dashboard")),
+      menuItem("Upload Data", tabName = "upload", icon = icon("dashboard"))
     ),
     tags$head(
       singleton(
@@ -180,7 +181,35 @@ dashboardPage(
             
           )
         )
-      )#Dashboard tab end
+      ),#Dashboard tab end
+      #Upload new grants
+      tabItem(tabName = "upload",
+              fileInput('file1', 'Choose file to upload',
+                        accept = c(
+                          'text/csv',
+                          'text/comma-separated-values',
+                          'text/tab-separated-values',
+                          'text/plain',
+                          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                          '.csv',
+                          '.tsv',
+                          '.xlsx',
+                          '.xls'
+                        )
+              ),
+              strong("Please wait, your file will be uploaded here: https://www.synapse.org/#!Synapse:syn6047020"),
+              tags$hr(),
+              strong("Do not close until upload is complete"),
+              textOutput('contents')
+              #tags$hr(),
+              #checkboxInput('header', 'Header', TRUE),
+              #radioButtons('sep', 'Separator',
+              #             c(Comma=',',
+              #               Semicolon=';',
+              #               Tab='\t'),
+              #             ',')
+      )#Upload Data tab End
+      
     )
   )
 )

@@ -1,5 +1,6 @@
 
 # Server logic for AvonMBC
+options(shiny.maxRequestSize = 100*1024^2)
 
 server <- function(input, output,session) {
   session$sendCustomMessage(type="readCookie",
@@ -80,6 +81,25 @@ server <- function(input, output,session) {
     output$numGrants <- renderText({
       table.df<-tableQuery()
       nrow(table.df)
+    })
+    # ---------------------------------------------
+    # DATA UPLOAD
+    # ---------------------------------------------
+    output$contents <- renderText({
+      # input$file1 will be NULL initially. After the user selects
+      # and uploads a file, it will be a data frame with 'name',
+      # 'size', 'type', and 'datapath' columns. The 'datapath'
+      # column will contain the local filenames where the data can
+      # be found.
+      
+      inFile <- input$file1
+      
+      if (is.null(inFile)) {
+        return(NULL)
+      }
+      
+      synStore(File(inFile$datapath,name = inFile$name, parentId= "syn6047020"))
+      "Your upload is complete"
     })
     
     # ---------------------------------------------

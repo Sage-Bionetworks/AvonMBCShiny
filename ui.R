@@ -58,6 +58,7 @@ dashboardPage(
             box(title="Grant Info", width = 8,status = "info",
                 tags$style(type='text/css', '#AwardTitle {font-weight: bold; font-size: 16px;}'),
                 textOutput("AwardTitle"),
+                textOutput("AwardCode"),
                 textOutput("PIName"),
                 textOutput("Institution"),
                 textOutput("Date"),
@@ -65,6 +66,16 @@ dashboardPage(
                 actionButton("tabBut", "View Related San Antonio Abstracts by Author"),
                 actionButton("SA_dist", "View Top 20 Related San Antonio Abstracts by Text")
             ),
+            bsModal("modalExample", "Data Table", "tabBut", size = "large",
+                    DT::dataTableOutput("sanantonio_abstracts")),
+            bsModal("abstractText", "Abstract Text", "rowtogg", size="large",
+                    tags$style(type='text/css', '#sanantonio_text {font-size:10px;}'),
+                    htmlOutput("sanantonio_text")),
+            bsModal("modal_dist", "Data Table", "SA_dist", size = "large",
+                    DT::dataTableOutput("sanantonio_dist")),
+            bsModal("abstractText_dist", "Abstract Text", "rowtogg", size="large",
+                    tags$style(type='text/css', '#sanantonio_distabstracts {font-size:10px;}'),
+                    htmlOutput("sanantonio_distabstracts")),
             box(title="MBC annotations",width = 4,collapsible=T, collapsed = F,status = "info",
                 tags$style(type='text/css', '#Pathway {font-size:10px;}'),
                 tags$style(type='text/css', '#PathwayGroup {font-size:10px;}'),
@@ -88,73 +99,63 @@ dashboardPage(
             )
           ),
           fluidRow(
-            column(width=4,
-              box(title="MBC Relatedness",collapsible=T, collapsed = F,width = NULL,
-                  textOutput("mutable.Metayn"),
-                  strong("Probability that grant is MBC related:"),
-                  textOutput("MetaYNPostProb"),
-                  tags$form(
-                    selectInput("mutable.metaynmenu","Change Metastasis (y/n) here:",selectize = T,
-                                choices = c("","yes","no")),
-                    actionButton("button5","Save")
-                  ),
-                  strong("Last Updated by:"),
-                  htmlOutput("mutable.MetaYN.User")
-              ),
-              box(title="Metastatic Stage",collapsible=T, collapsed = F,width = NULL,
-                  verbatimTextOutput("mutable.Metastage"),
-                  plotOutput("MetaStagePostProb"),
-                  tags$form(
-                    selectInput("mutable.metastagemenu","Change Metastasic stage here:",selectize = T,multiple=T,
-                                choices = c("",mutablemetastage)),
-                    actionButton("button6","Save")
-                  ),
-                  strong("Last Updated by:"),
-                  htmlOutput("mutable.Metastage.User")
-              )
+            box(title="MBC Relatedness",collapsible=T, collapsed = F,width = 3,
+                textOutput("mutable.Metayn"),
+                strong("Probability that grant is about metastatic breast cancer:"),
+                textOutput("MetaYNPostProb"),
+                tags$form(
+                  selectInput("mutable.metaynmenu","Change Metastasis (y/n) here:",selectize = T,
+                              choices = c("","yes","no")),
+                  actionButton("button5","Save")
+                ),
+                strong("Last Updated by:"),
+                htmlOutput("mutable.MetaYN.User")
             ),
-            column(width=4,
-                   box(title="Molecular Target", collapsible = T, collapsed = F, width=NULL,
-                       verbatimTextOutput("mutable.MT"),
-                       tags$form(
-                         selectInput("mutable.mtmenu","Select Molecular Target here:",selectize = T,multiple = T,
-                                     choices = c("")),
-                         actionButton("button3","Save")
-                       ),
-                       strong("Last Updated by:"),
-                       htmlOutput("mutable.MT.User")
-                   ),
-                   box(title="Pathway", collapsible = T, collapsed = F, width=NULL,
-                       verbatimTextOutput("mutable.Pathway"),
-                       tags$form(
-                         selectInput("mutable.pathwaymenu","Select Pathway here:",selectize = T,multiple = T,
-                                     choices = pathways),
-                         actionButton("button4","Save")
-                       ),
-                       strong("Last Updated by:"),
-                       htmlOutput("mutable.Pathway.User")
-                   )
+            box(title="Metastatic Stage",collapsible=T, collapsed = F,width = 5,
+                verbatimTextOutput("mutable.Metastage"),
+                actionButton("postProb", "View Posterior Probabilities"),
+                tags$form(
+                  selectInput("mutable.metastagemenu","Change Metastasic stage here:",selectize = T,multiple=T,
+                              choices = c("",mutablemetastage)),
+                  actionButton("button6","Save")
+                ),
+                strong("Last Updated by:"),
+                htmlOutput("mutable.Metastage.User")
             ),
-            column(width=4,
-                   box(title="Gene List",collapsible=T, collapsed = F,width = NULL,
-                       verbatimTextOutput("geneList")
-                   )
-            )
+            box(title="Gene List",collapsible=T, collapsed = F,width = 4,
+                verbatimTextOutput("geneList")
+            ),
+            bsModal("hiddenProbs", "Posterior Probabilities", "postProb", size = "small",
+                    plotOutput("MetaStagePostProb"))
           ),
           fluidRow(
-            box(title= "Abstract",collapsible=T, collapsed = F, width = NULL,
-                tags$style(type='text/css', '#TechAbstract {font-size:12px;}'), 
-                htmlOutput("TechAbstract"),
-                bsModal("modalExample", "Data Table", "tabBut", size = "large",
-                        DT::dataTableOutput("sanantonio_abstracts")),
-                bsModal("abstractText", "Abstract Text", "rowtogg", size="large",
-                        tags$style(type='text/css', '#sanantonio_text {font-size:10px;}'),
-                        htmlOutput("sanantonio_text")),
-                bsModal("modal_dist", "Data Table", "SA_dist", size = "large",
-                        DT::dataTableOutput("sanantonio_dist")),
-                bsModal("abstractText_dist", "Abstract Text", "rowtogg", size="large",
-                        tags$style(type='text/css', '#sanantonio_distabstracts {font-size:10px;}'),
-                        htmlOutput("sanantonio_distabstracts"))
+            column(width=6,
+              box(title= "Abstract",collapsible=T, collapsed = F, width = NULL,
+                  tags$style(type='text/css', '#TechAbstract {font-size:12px;}'), 
+                  htmlOutput("TechAbstract")
+              )
+            ),
+            column(width=6,
+              box(title="Molecular Target", collapsible = T, collapsed = F, width=NULL,
+                  verbatimTextOutput("mutable.MT"),
+                  tags$form(
+                    selectInput("mutable.mtmenu","Select Molecular Target here:",selectize = T,multiple = T,
+                                choices = c("")),
+                    actionButton("button3","Save")
+                  ),
+                  strong("Last Updated by:"),
+                  htmlOutput("mutable.MT.User")
+              ),
+              box(title="Pathway", collapsible = T, collapsed = F, width=NULL,
+                  verbatimTextOutput("mutable.Pathway"),
+                  tags$form(
+                    selectInput("mutable.pathwaymenu","Select Pathway here:",selectize = T,multiple = T,
+                                choices = pathways),
+                    actionButton("button4","Save")
+                  ),
+                  strong("Last Updated by:"),
+                  htmlOutput("mutable.Pathway.User")
+              )
             )
           )
           

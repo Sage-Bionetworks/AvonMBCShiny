@@ -12,8 +12,8 @@ metaStageMenu= sort(unique(tolower(metaStageMenu)))
 metaStageMenu = c("all",metaStageMenu)
 mutablemetastage = c("arrest & extravasation","immune surveillance/escape",
                      "intravasation & circulation","invasion","metabolic deregulation",
-                     "metastatic colonization","other/not specified","auto generated")
-pathways <- read.csv("pathways.csv",stringsAsFactors = F)
+                     "metastatic colonization","other/not specified")
+pathways <- read.csv("pathways.csv",sep="\t",stringsAsFactors = F)
 pathways <- pathways$pathways
 pathways <- sort(pathways)
 # ------------------------------------------------------

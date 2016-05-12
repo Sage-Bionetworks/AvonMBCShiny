@@ -117,7 +117,10 @@ server <- function(input, output,session) {
       table.df <- selectGrant()
       table.df[, "Institution"]
     })
-    
+    output$AwardCode<-renderText({
+      table.df <- selectGrant()
+      table.df[, "AwardCode"]
+    })
     #Grant title
     output$AwardTitle<-renderText({
       table.df <- selectGrant()
@@ -145,7 +148,7 @@ server <- function(input, output,session) {
     #Grant date start-end
     output$Date <- renderText({
       table.df <- selectGrant()
-      date <- paste(table.df[,"AwardStartDate"],table.df[,"AwardEndDate"],sep="-")
+      date <- paste(table.df[,"AwardStartDate"],table.df[,"AwardEndDate"],sep=" to ")
       if (date == "NA-NA") {
         ""
       } else {

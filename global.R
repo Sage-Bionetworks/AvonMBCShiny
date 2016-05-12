@@ -7,12 +7,12 @@ library(DT)
 #source("load.R")
 metaStageMenu <- c("arrest & extravasation","immune surveillance/escape",
                    "intravasation & circulation","invasion","metabolic deregulation",
-                   "metastatic colonization","multiple","other/not specified","not annotated")
+                   "metastatic colonization","multiple","other/not specified","auto generated")
 metaStageMenu= sort(unique(tolower(metaStageMenu)))
 metaStageMenu = c("all",metaStageMenu)
 mutablemetastage = c("arrest & extravasation","immune surveillance/escape",
                      "intravasation & circulation","invasion","metabolic deregulation",
-                     "metastatic colonization","other/not specified","not annotated")
+                     "metastatic colonization","other/not specified","auto generated")
 
 # ------------------------------------------------------
 # global functions

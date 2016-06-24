@@ -7,12 +7,12 @@ library(DT)
 #source("load.R")
 metaStageMenu <- c("arrest & extravasation","immune surveillance/escape",
                    "intravasation & circulation","invasion","metabolic deregulation",
-                   "metastatic colonization","multiple","other/not specified","auto generated")
+                   "metastatic colonization","multiple","other/not specified","auto generated","not relevant")
 metaStageMenu= sort(unique(tolower(metaStageMenu)))
 metaStageMenu = c("all",metaStageMenu)
 mutablemetastage = c("arrest & extravasation","immune surveillance/escape",
                      "intravasation & circulation","invasion","metabolic deregulation",
-                     "metastatic colonization","other/not specified")
+                     "metastatic colonization","not relevant","other/not specified")
 pathways <- read.csv("pathways.csv",sep="\t",stringsAsFactors = F)
 pathways <- pathways$pathways
 pathways <- sort(pathways)
